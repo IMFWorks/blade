@@ -1,6 +1,7 @@
 package com.imf.blade
 
 import androidx.annotation.NonNull
+import com.imf.blade.messager.FlutterChannel
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -15,10 +16,13 @@ class BladePlugin: FlutterPlugin, MethodCallHandler {
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private lateinit var channel : MethodChannel
+  lateinit var flutterChannel: FlutterChannel
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "blade")
     channel.setMethodCallHandler(this)
+
+    flutterChannel = FlutterChannel(flutterPluginBinding.binaryMessenger, "blade")
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
