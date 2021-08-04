@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -26,7 +25,6 @@ class Blade {
       return 'no response';
     });
   }
-
 }
 
 class EventResponse {
