@@ -10,11 +10,12 @@ import com.imf.blade.Blade
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode
 import io.flutter.embedding.android.FlutterView
+import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.platform.PlatformPlugin
 import java.util.*
 
-open class BladeActivity() : FlutterActivity(), FlutterViewContainer {
+open class BladeActivity : FlutterActivity(), FlutterViewContainer {
     private val who = UUID.randomUUID().toString()
     private lateinit var flutterView: FlutterView
     private var platformPlugin: PlatformPlugin? = null
@@ -24,8 +25,8 @@ open class BladeActivity() : FlutterActivity(), FlutterViewContainer {
         super.onCreate(savedInstanceState)
 
         val foundFlutterView = findFlutterView(window.decorView)
-        if (foundFlutterView != null) {
-            flutterView = foundFlutterView
+        foundFlutterView?.let {
+            flutterView = it
         }
 
         containerLifecycleListener = ContainerLifecycleListener(this, Blade.shared().plugin)
@@ -43,20 +44,26 @@ open class BladeActivity() : FlutterActivity(), FlutterViewContainer {
 
     public override fun onResume() {
         super.onResume()
+
+        // todo-wrs
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
         }
 
-        platformPlugin = PlatformPlugin(activity, flutterEngine!!.platformChannel)
-
-        containerLifecycleListener.handleAppeared()
         flutterEngine?.let {
+            platformPlugin = PlatformPlugin(activity, it.platformChannel)
             attachToFlutterEngine(flutterView, it)
         }
+
+        containerLifecycleListener.handleAppeared()
     }
 
     override fun onStop() {
         super.onStop()
-        flutterEngine!!.lifecycleChannel.appIsResumed()
+
+        flutterEngine?.let {
+            it.lifecycleChannel.appIsResumed()
+        }
+
     }
 
     override fun onPause() {
@@ -76,43 +83,43 @@ open class BladeActivity() : FlutterActivity(), FlutterViewContainer {
 //        }
 
         containerLifecycleListener.handleDisappeared()
+
         flutterEngine?.let {
             detachFromFlutterEngine(flutterView, it)
             it.lifecycleChannel.appIsResumed()
         }
+
+        platformPlugin = null
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         flutterEngine?.let {
             it.lifecycleChannel.appIsResumed()
         }
+
+        super.onDestroy()
 
         containerLifecycleListener.handleDestroyed()
     }
 
     override fun shouldRestoreAndSaveState(): Boolean {
-//        return if (intent.hasExtra(EXTRA_ENABLE_STATE_RESTORATION)) {
-//            intent.getBooleanExtra(EXTRA_ENABLE_STATE_RESTORATION, false)
-//        } else true
-
         return true;
     }
 
-    override fun providePlatformPlugin(
-        activity: Activity?,
-        flutterEngine: FlutterEngine
+    override fun providePlatformPlugin(activity: Activity?, flutterEngine: FlutterEngine
     ): PlatformPlugin? {
         return null
     }
 
     override fun onBackPressed() {
-        //ActivityAndFragmentPatch.onBackPressed()
+        super.onBackPressed()
+
+        containerBackPressed()
     }
 
-//    override fun getRenderMode(): RenderMode {
-//        return ActivityAndFragmentPatch.getRenderMode()
-//    }
+    override fun getRenderMode(): RenderMode {
+        return containerRenderMode()
+    }
 
     override val contextActivity: Activity
         get() {return this}

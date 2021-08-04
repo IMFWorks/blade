@@ -3,7 +3,9 @@ package com.imf.blade.container
 import android.app.Activity
 import android.view.View
 import android.view.ViewGroup
+import com.imf.blade.Blade
 import io.flutter.embedding.android.FlutterView
+import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
 
 interface FlutterViewContainer {
@@ -45,4 +47,12 @@ fun FlutterViewContainer.attachToFlutterEngine(flutterView: FlutterView, flutter
 fun FlutterViewContainer.detachFromFlutterEngine(flutterView: FlutterView, flutterEngine: FlutterEngine) {
     flutterView.detachFromFlutterEngine()
     flutterEngine.lifecycleChannel.appIsInactive()
+}
+
+fun FlutterViewContainer.containerRenderMode(): RenderMode {
+    return RenderMode.texture
+}
+
+fun FlutterViewContainer.containerBackPressed() {
+    //Blade.shared().plugin.popRoute(null, null)
 }

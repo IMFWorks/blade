@@ -12,6 +12,7 @@ class FlutterChannel(messenger: BinaryMessenger, name: String) {
         event: FlutterEvent
         , listener: FlutterEventResponseListener<T>) {
         channel.invokeMethod(event.methodName, event.toJSON(), object: MethodChannel.Result {
+
             override fun success(result: Any?) {
                 if (result is String) {
                     val response = gson.fromJson(result, T::class.java)
@@ -20,6 +21,7 @@ class FlutterChannel(messenger: BinaryMessenger, name: String) {
                     listener.failure("response data is not String")
                 }
             }
+
             override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
                 listener.failure(errorMessage)
             }
@@ -40,5 +42,3 @@ interface FlutterEventResponseListener<T> {
 
     }
 }
-
-
