@@ -52,7 +52,3 @@ fun FlutterViewContainer.detachFromFlutterEngine(flutterView: FlutterView, flutt
 fun FlutterViewContainer.containerRenderMode(): RenderMode {
     return RenderMode.texture
 }
-
-fun FlutterViewContainer.containerBackPressed() {
-    //Blade.shared().plugin.popRoute(null, null)
-}

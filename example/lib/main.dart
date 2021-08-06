@@ -32,7 +32,6 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      Blade.hello();
       platformVersion =
           await Blade.platformVersion ?? 'Unknown platform version';
     } on PlatformException {

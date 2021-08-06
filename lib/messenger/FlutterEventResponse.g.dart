@@ -7,9 +7,7 @@ part of 'FlutterEventResponse.dart';
 // **************************************************************************
 
 FlutterEventResponse _$FlutterEventResponseFromJson(Map<String, dynamic> json) {
-  return FlutterEventResponse(
-    status: json['status'] as int
-  );
+  return FlutterEventResponse(json['status'] as int);
 }
 
 Map<String, dynamic> _$FlutterEventResponseToJson(
@@ -17,3 +15,4 @@ Map<String, dynamic> _$FlutterEventResponseToJson(
     <String, dynamic>{
       'status': instance.status,
     };
+

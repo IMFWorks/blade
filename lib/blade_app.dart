@@ -52,9 +52,7 @@ class BladeAppState extends State<BladeApp> implements PageEventListener {
 
   NativeRouterApi get nativeRouterApi => _nativeRouterApi;
   late NativeRouterApi _nativeRouterApi;
-
   late EventDispatcher  eventDispatcher;
-
 
   BladeRouteFactory get routeFactory => widget.routeFactory;
   final Set<int> _activePointers = <int>{};
@@ -62,13 +60,10 @@ class BladeAppState extends State<BladeApp> implements PageEventListener {
   @override
   void initState() {
     final pageName = widget.initialRoute;
-
     _containers.add(_createContainer(
         PageInfo(name: pageName, id: _createUniqueId(pageName))));
 
     _nativeRouterApi = NativeRouterApi();
-
-
     eventDispatcher = EventDispatcher(this);
 
     super.initState();
@@ -283,7 +278,6 @@ class BladeAppState extends State<BladeApp> implements PageEventListener {
           targetContainers: _pendingPopcontainers);
     }
   }
-
 
   void _removeContainer(String uniqueId,
       {required List<BladeContainer> targetContainers}) {

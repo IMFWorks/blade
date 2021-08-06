@@ -17,8 +17,9 @@ import java.util.*
 
 open class BladeActivity : FlutterActivity(), FlutterViewContainer {
     private val who = UUID.randomUUID().toString()
-    private lateinit var flutterView: FlutterView
     private var platformPlugin: PlatformPlugin? = null
+
+    private lateinit var flutterView: FlutterView
     private lateinit var containerLifecycleListener: ContainerLifecycleListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +55,7 @@ open class BladeActivity : FlutterActivity(), FlutterViewContainer {
             attachToFlutterEngine(flutterView, it)
         }
 
+        containerLifecycleListener.handlePushed();
         containerLifecycleListener.handleAppeared()
     }
 
@@ -63,7 +65,6 @@ open class BladeActivity : FlutterActivity(), FlutterViewContainer {
         flutterEngine?.let {
             it.lifecycleChannel.appIsResumed()
         }
-
     }
 
     override fun onPause() {
@@ -112,9 +113,8 @@ open class BladeActivity : FlutterActivity(), FlutterViewContainer {
     }
 
     override fun onBackPressed() {
+        containerLifecycleListener.handlePopped()
         super.onBackPressed()
-
-        containerBackPressed()
     }
 
     override fun getRenderMode(): RenderMode {
