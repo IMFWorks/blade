@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:blade/messenger/event_dispatcher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,16 +10,15 @@ import 'package:uuid/uuid.dart';
 
 import 'package:blade/blade_container.dart';
 import 'package:blade/messages.dart';
-import 'package:blade/blade_flutter_router_api.dart';
 import 'package:blade/logger.dart';
 import 'package:blade/blade_navigator.dart';
 import 'package:blade/page_visibility.dart';
 import 'package:blade/overlay_entry.dart';
+import 'package:blade/messenger/page_info.dart';
+
+import 'blade_page.dart';
 
 typedef BladeAppBuilder = Widget Function(Widget home);
-
-typedef BladeRouteFactory = Route<dynamic> Function(
-    RouteSettings settings, String uniqueId);
 
 typedef PageBuilder = Widget Function(
     BuildContext context, RouteSettings settings);
@@ -41,9 +41,8 @@ class BladeApp extends StatefulWidget {
   State<StatefulWidget> createState() => BladeAppState();
 }
 
-class BladeAppState extends State<BladeApp> {
-  final Map<String, Completer<Object>> _pendingResult =
-      <String, Completer<Object>>{};
+class BladeAppState extends State<BladeApp> implements PageEventListener {
+  final Map<String, Completer<Object>> _pendingResult = <String, Completer<Object>>{};
 
   List<BladeContainer> get containers => _containers;
   final List<BladeContainer> _containers = <BladeContainer>[];
@@ -54,8 +53,8 @@ class BladeAppState extends State<BladeApp> {
   NativeRouterApi get nativeRouterApi => _nativeRouterApi;
   late NativeRouterApi _nativeRouterApi;
 
-  BladeFlutterRouterApi get bladeFlutterRouterApi => _bladeFlutterRouterApi;
-  late BladeFlutterRouterApi _bladeFlutterRouterApi;
+  late EventDispatcher  eventDispatcher;
+
 
   BladeRouteFactory get routeFactory => widget.routeFactory;
   final Set<int> _activePointers = <int>{};
@@ -63,11 +62,15 @@ class BladeAppState extends State<BladeApp> {
   @override
   void initState() {
     final pageName = widget.initialRoute;
+
     _containers.add(_createContainer(
-        PageInfo(pageName: pageName, uniqueId: _createUniqueId(pageName))));
+        PageInfo(name: pageName, id: _createUniqueId(pageName))));
 
     _nativeRouterApi = NativeRouterApi();
-    _bladeFlutterRouterApi = BladeFlutterRouterApi(this);
+
+
+    eventDispatcher = EventDispatcher(this);
+
     super.initState();
   }
 
@@ -129,13 +132,13 @@ class BladeAppState extends State<BladeApp> {
 
   BladeContainer _createContainer(PageInfo pageInfo) {
     return BladeContainer(
-        key: ValueKey<String>(pageInfo.uniqueId),
+        key: ValueKey<String>(pageInfo.id),
         pageInfo: pageInfo,
         routeFactory: widget.routeFactory);
   }
 
   Future<T> pushWithResult<T extends Object>(String pageName,
-      {Map<Object, Object>? arguments, bool withContainer = true}) {
+      {Map<String, Object>? arguments, bool withContainer = true}) {
     String uniqueId = _createUniqueId(pageName);
     if (withContainer) {
       final CommonParams params = CommonParams()
@@ -155,7 +158,7 @@ class BladeAppState extends State<BladeApp> {
 
   void push(String pageName,
       {required String uniqueId,
-      Map<dynamic, dynamic>? arguments,
+      Map<String, dynamic>? arguments,
       bool withContainer = true}) {
     _cancelActivePointers();
     final BladeContainer? container = _findContainerByUniqueId(uniqueId);
@@ -175,8 +178,8 @@ class BladeAppState extends State<BladeApp> {
       }
     } else {
       final PageInfo pageInfo = PageInfo(
-          pageName: pageName,
-          uniqueId: uniqueId,
+          name: pageName,
+          id: uniqueId,
           arguments: arguments,
           withContainer: withContainer);
       if (withContainer) {
@@ -196,7 +199,7 @@ class BladeAppState extends State<BladeApp> {
   }
 
   Future<void> popWithResult<T extends Object>(T? result) async {
-    final String uniqueId = topContainer.topPage.pageInfo.uniqueId;
+    final String uniqueId = topContainer.topPage.pageInfo.id;
     final result = pop(uniqueId: uniqueId);
     if (result == true) {
       if (_pendingResult.containsKey(uniqueId)) {
@@ -221,12 +224,12 @@ class BladeAppState extends State<BladeApp> {
 
     if (container != topContainer) {
       final CommonParams params = CommonParams()
-        ..pageName = container.pageInfo.pageName
-        ..uniqueId = container.pageInfo.uniqueId
+        ..pageName = container.pageInfo.name
+        ..uniqueId = container.pageInfo.id
         ..arguments = container.pageInfo.arguments;
       await _nativeRouterApi.popUtilRouter(params);
     }
-    container.popUntil(page.pageInfo.pageName);
+    container.popUntil(page.pageInfo.name);
     Logger.log(
         'pop container, uniqueId=$uniqueId, arguments:$arguments, $container');
     return true;
@@ -266,53 +269,21 @@ class BladeAppState extends State<BladeApp> {
   }
 
   void _notifyNativePop(BladeContainer container) async {
-    Logger.log('_removeContainer ,  uniqueId=${container.pageInfo.uniqueId}');
+    Logger.log('_removeContainer ,  uniqueId=${container.pageInfo.id}');
     _containers.remove(container);
     _pendingPopcontainers.add(container);
     final CommonParams params = CommonParams()
-      ..pageName = container.pageInfo.pageName
-      ..uniqueId = container.pageInfo.uniqueId
+      ..pageName = container.pageInfo.name
+      ..uniqueId = container.pageInfo.id
       ..arguments = container.pageInfo.arguments;
     await _nativeRouterApi.popRoute(params);
 
     if (Platform.isAndroid) {
-      _removeContainer(container.pageInfo.uniqueId,
+      _removeContainer(container.pageInfo.id,
           targetContainers: _pendingPopcontainers);
     }
   }
 
-  void onForeground() {
-    PageVisibilityBinding.instance
-        .dispatchForegroundEvent(_getCurrentPageRoute());
-  }
-
-  void onBackground() {
-    PageVisibilityBinding.instance
-        .dispatchBackgroundEvent(_getCurrentPageRoute());
-  }
-
-  void onNativeViewShow({CommonParams? arg}) {
-    final String? uniqueId = arg?.uniqueId;
-    if (uniqueId != null) {
-      if (topContainer.pageInfo.uniqueId != uniqueId) {
-        return;
-      }
-    }
-    PageVisibilityBinding.instance
-        .dispatchPageHideEvent(_getCurrentPageRoute());
-  }
-
-  void onNativeViewHide({CommonParams? arg}) {
-    PageVisibilityBinding.instance
-        .dispatchPageShowEvent(_getCurrentPageRoute());
-  }
-
-  void removeRouter(String? uniqueId) {
-    if (uniqueId != null) {
-      _removeContainer(uniqueId, targetContainers: _pendingPopcontainers);
-      _removeContainer(uniqueId, targetContainers: _containers);
-    }
-  }
 
   void _removeContainer(String uniqueId,
       {required List<BladeContainer> targetContainers}) {
@@ -328,18 +299,18 @@ class BladeAppState extends State<BladeApp> {
   }
 
   String _getCurrentPageUniqueId() {
-    return topContainer.topPage.pageInfo.uniqueId;
+    return topContainer.topPage.pageInfo.id;
   }
 
   String? _getPreviousPageUniqueId() {
     assert(topContainer.pages != null);
     final int pageCount = topContainer.pages.length;
     if (pageCount > 1) {
-      return topContainer.pages[pageCount - 2].pageInfo.uniqueId;
+      return topContainer.pages[pageCount - 2].pageInfo.id;
     } else {
       final int containerCount = containers.length;
       if (containerCount > 1) {
-        return containers[containerCount - 2].pages.last.pageInfo.uniqueId;
+        return containers[containerCount - 2].pages.last.pageInfo.id;
       }
     }
 
@@ -368,9 +339,9 @@ class BladeAppState extends State<BladeApp> {
       List<BladeContainer> containers, String uniqueId) {
     try {
       return containers.singleWhere((BladeContainer element) =>
-          (element.pageInfo.uniqueId == uniqueId) ||
+          (element.pageInfo.id == uniqueId) ||
           element.pages.any((BladePage<dynamic> element) =>
-              element.pageInfo.uniqueId == uniqueId));
+              element.pageInfo.id == uniqueId));
     } catch (e) {
       Logger.logObject(e);
     }
@@ -380,7 +351,7 @@ class BladeAppState extends State<BladeApp> {
   BladePage? _findPageByUniqueId(String uniqueId, BladeContainer container) {
     try {
       return container.pages.singleWhere(
-          (BladePage element) => element.pageInfo.uniqueId == uniqueId);
+          (BladePage element) => element.pageInfo.id == uniqueId);
     } catch (e) {
       Logger.logObject(e);
     }
@@ -404,33 +375,45 @@ class BladeAppState extends State<BladeApp> {
     }
     return count;
   }
-}
 
-class BladePage<T> extends Page<T> {
-  BladePage({LocalKey? key, required this.routeFactory, required this.pageInfo})
-      : super(key: key, name: pageInfo.pageName, arguments: pageInfo.arguments);
 
-  final BladeRouteFactory routeFactory;
-  final PageInfo pageInfo;
-
-  static BladePage<dynamic> create(
-      PageInfo pageInfo, BladeRouteFactory routeFactory) {
-    return BladePage<dynamic>(
-        key: UniqueKey(), pageInfo: pageInfo, routeFactory: routeFactory);
+  // PageEventListener
+  void pushPage(PageInfo pageInfo) {
+    push(pageInfo.name, uniqueId: pageInfo.id, arguments: pageInfo.arguments, withContainer: true);
   }
 
-  final List<Route<T>> _route = <Route<T>>[];
-  Route<T>? get route => _route.isEmpty ? null : _route.first;
+  void popPage(PageInfo pageInfo) {
 
-  @override
-  String toString() =>
-      '${objectRuntimeType(this, 'BladePage')}(name:$name, uniqueId:${pageInfo.uniqueId}, arguments:$arguments)';
+  }
 
-  @override
-  Route<T> createRoute(BuildContext context) {
-    _route.clear();
-    _route.add(routeFactory(this, pageInfo.uniqueId) as Route<T>);
-    return _route.first;
+  void removePage(PageInfo pageInfo) {
+    _removeContainer(pageInfo.id, targetContainers: _pendingPopcontainers);
+    _removeContainer(pageInfo.id, targetContainers: _containers);
+  }
+
+  void onPageAppeared(PageInfo pageInfo) {
+    PageVisibilityBinding.instance
+        .dispatchPageShowEvent(_getCurrentPageRoute());
+  }
+
+  void onPageDisappeared(PageInfo pageInfo) {
+    if (topContainer.pageInfo.id != pageInfo.id) {
+      return;
+    }
+
+    PageVisibilityBinding.instance
+        .dispatchPageHideEvent(_getCurrentPageRoute());
+
+  }
+
+  void onForeground() {
+    PageVisibilityBinding.instance
+        .dispatchForegroundEvent(_getCurrentPageRoute());
+  }
+
+  void onBackground() {
+    PageVisibilityBinding.instance
+        .dispatchBackgroundEvent(_getCurrentPageRoute());
   }
 }
 

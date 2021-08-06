@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/scheduler.dart';
 
-import 'package:blade/blade_navigator.dart';
+import 'package:blade/messenger/page_info.dart';
 import 'package:blade/blade_app.dart';
+import 'blade_page.dart';
 import 'overlay_entry.dart';
 
 class BladeContainer extends StatefulWidget {
@@ -101,7 +102,7 @@ class BladeContainerState extends State<BladeContainer> {
         return false;
       },
       observers: <NavigatorObserver>[
-        BladeNavigatorObserver(widget._pages, widget.pageInfo.uniqueId),
+        BladeNavigatorObserver(widget._pages, widget.pageInfo.id),
       ],
     );
   }

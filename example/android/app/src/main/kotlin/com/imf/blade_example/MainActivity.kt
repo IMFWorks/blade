@@ -19,11 +19,17 @@ class MainActivity :AppCompatActivity() {
     }
 
     private fun openFlutterPage() {
+        val params: HashMap<String,Any> = HashMap<String,Any>()
+        params.put("1","Python")
+
         val intent = BladeActivity.CachedEngineIntentBuilder(FlutterBladeActivity::class.java)
             .destroyEngineWithActivity(false)
             .url("flutterPage")
             .uniqueId("1234")
+            .urlParams(params)
             .build(this)
+
+
 
         startActivity(intent)
     }

@@ -6,12 +6,12 @@ import 'package:blade/overlay_entry.dart';
 
 import 'blade_container.dart';
 import 'logger.dart';
+import 'package:blade/messenger/page_info.dart';
 
 /// A object that manages a set of pages with a hybrid stack.
 ///
 class BladeNavigator {
   const BladeNavigator(this._appState);
-
   final BladeAppState _appState;
 
   /// Retrieves the instance of [BladeNavigator]
@@ -34,11 +34,11 @@ class BladeNavigator {
     try {
       return _appState.containers
           .firstWhere((element) =>
-              element.pageInfo.pageName == pageName ||
+              element.pageInfo.name == pageName ||
               element.pages
-                  .any((element) => element.pageInfo.pageName == pageName))
+                  .any((element) => element.pageInfo.name == pageName))
           .pageInfo
-          .uniqueId;
+          .id;
     } catch (e) {
       Logger.logObject(e);
     }
@@ -55,7 +55,7 @@ class BladeNavigator {
 
   /// Push the page with the given [name] onto the hybrid stack.
   Future<T?> push<T extends Object>(String name,
-      {Map<Object, Object>? arguments, bool withContainer = true}) {
+      {Map<String, Object>? arguments, bool withContainer = true}) {
     if (isFlutterPage(name)) {
       return _appState.pushWithResult(name,
           arguments: arguments, withContainer: withContainer);
@@ -69,7 +69,7 @@ class BladeNavigator {
   }
 
   Future<T> pushWithResult<T extends Object>(String pageName,
-      {Map<Object, Object>? arguments, bool withContainer = true}) {
+      {Map<String, Object>? arguments, bool withContainer = true}) {
     return _appState.pushWithResult(pageName,
         arguments: arguments, withContainer: withContainer);
   }
@@ -116,17 +116,4 @@ class BladeNavigator {
   int pageSize() {
     return _appState.pageSize();
   }
-}
-
-class PageInfo {
-  PageInfo(
-      {required this.pageName,
-      required this.uniqueId,
-      this.arguments,
-      this.withContainer = true});
-
-  bool withContainer;
-  String pageName;
-  String uniqueId;
-  Map<dynamic, dynamic>? arguments;
 }

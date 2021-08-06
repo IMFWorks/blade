@@ -1,8 +1,12 @@
+import 'package:blade/blade_app.dart';
+import 'package:blade_example/simple_widget.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:blade/blade.dart';
+
+import 'flutter_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -45,17 +49,79 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  static Map<String, PageBuilder> routerMap = {
+    '/': (context, settings) {
+      return Container(color: Colors.amber);
+    },
+
+    ///可以在native层通过 getContainerParams 来传递参数
+    'flutterPage': (context, settings) {
+      return FlutterRouteWidget(
+          params: settings.arguments as Map<String, dynamic>, uniqueId: "");
+    },
+    'tab_friend': (context, settings) {
+      return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
+          "This is a flutter fragment");
+    },
+    'tab_message': (context, settings) {
+      return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
+          "This is a flutter fragment");
+    },
+    'tab_flutter1': (context, settings) {
+      return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
+          "This is a custom FlutterView");
+    },
+    'tab_flutter2': (context, settings) {
+      return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
+          "This is a custom FlutterView");
+    },
+  };
+
+  Route<dynamic> routeFactory(RouteSettings settings, String uniqueId) {
+    return MaterialPageRoute<dynamic>(
+        settings: settings,
+        builder: (context) {
+          final PageBuilder? func = routerMap[settings.name];
+          if (func != null) {
+            return func(context, settings);
+          } else {
+            // 404
+            return Container();
+          }
+        });
+    // return PageRouteBuilder<dynamic>(
+    //     settings: settings,
+    //     pageBuilder: (context, __, ___) {
+    //       final PageBuilder? func = routerMap[settings.name];
+    //       if (func != null) {
+    //         return func(context, settings);
+    //       } else {
+    //         // 404
+    //         return Container();
+    //       }
+    //     }
+    // ,
+    // transitionsBuilder: (BuildContext context, Animation<double> animation,
+    //     Animation<double> secondaryAnimation, Widget child) {
+    //   return SlideTransition(
+    //     position: Tween<Offset>(
+    //       begin: const Offset(1.0, 0),
+    //       end: Offset.zero,
+    //     ).animate(animation),
+    //     child: SlideTransition(
+    //       position: Tween<Offset>(
+    //         begin: Offset.zero,
+    //         end: const Offset(-1.0, 0),
+    //       ).animate(secondaryAnimation),
+    //       child: child,
+    //     ),
+    //   );
+    // },
+    // );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
-      ),
-    );
+    return BladeApp(routeFactory);
   }
 }
