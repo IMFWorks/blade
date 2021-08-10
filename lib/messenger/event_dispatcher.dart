@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:blade/messenger/FlutterEventResponse.dart';
+import 'package:blade/messenger/NativeEvent.dart';
 import 'package:blade/messenger/page_info.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 typedef _EventHandler = dynamic Function(dynamic arguments);
@@ -42,7 +42,7 @@ class EventDispatcher {
       return ok;
     };
 
-    eventHandlers["popPage"] = (dynamic arguments) async {
+    eventHandlers["pagePopped"] = (dynamic arguments) async {
       final pageInfo = _decodePageInfo(arguments);
       if (pageInfo != null) {
         pageEventListener.popPage(pageInfo);
@@ -95,6 +95,11 @@ class EventDispatcher {
     }
 
     return PageInfo.fromJson(jsonDecode(arguments));
+  }
+
+  Future<bool> sendNativeEvent(NativeEvent event) async {
+    _channel.invokeMethod(event.method, jsonEncode(event.pageInfo.toJson()));
+    return true;
   }
 }
 

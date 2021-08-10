@@ -11,8 +11,8 @@ import io.flutter.embedding.engine.FlutterEngine
 interface FlutterViewContainer {
     val contextActivity: Activity
     val url: String
-    val urlParams: Map<String, Any?>?
-    val uniqueId: String
+    val urlParams: Map<String, Any>?
+    val id: String
     fun finish(result: Map<String, Any>?)
 }
 

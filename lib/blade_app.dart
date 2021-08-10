@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:blade/messenger/NativeEvent.dart';
 import 'package:blade/messenger/event_dispatcher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -267,11 +268,13 @@ class BladeAppState extends State<BladeApp> implements PageEventListener {
     Logger.log('_removeContainer ,  uniqueId=${container.pageInfo.id}');
     _containers.remove(container);
     _pendingPopcontainers.add(container);
-    final CommonParams params = CommonParams()
-      ..pageName = container.pageInfo.name
-      ..uniqueId = container.pageInfo.id
-      ..arguments = container.pageInfo.arguments;
-    await _nativeRouterApi.popRoute(params);
+
+
+    final pageInfo = PageInfo(name: container.pageInfo.name,
+        id: container.pageInfo.id,
+        arguments:container.pageInfo.arguments);
+    final popNaivePageEvent = NativeEvent("popNativePage", pageInfo);
+    eventDispatcher.sendNativeEvent(popNaivePageEvent);
 
     if (Platform.isAndroid) {
       _removeContainer(container.pageInfo.id,
@@ -377,7 +380,7 @@ class BladeAppState extends State<BladeApp> implements PageEventListener {
   }
 
   void popPage(PageInfo pageInfo) {
-
+    pop(uniqueId: pageInfo.id, arguments: pageInfo.arguments);
   }
 
   void removePage(PageInfo pageInfo) {

@@ -44,12 +44,12 @@ class Blade {
             val dartEntrypoint = DartEntrypoint(
                 FlutterMain.findAppBundlePath(), defaultDartEntrypointFunctionName
             );
-            cachedEngine.dartExecutor.executeDartEntrypoint(dartEntrypoint);
-            engine = cachedEngine;
+            cachedEngine.dartExecutor.executeDartEntrypoint(dartEntrypoint)
+            engine = cachedEngine
             FlutterEngineCache.getInstance().put(ENGINE_ID, cachedEngine)
         }
         // 2. set delegate
-        //getPlugin().setDelegate(delegate)
+        plugin.delegate = delegate
 
         //3. register ActivityLifecycleCallbacks
         //setupActivityLifecycleCallback(application, isBackForegroundEventOverridden)
@@ -67,7 +67,7 @@ class Blade {
                     Class.forName("com.imf.blade.BladePlugin") as Class<out BladePlugin>
                 val plugin: BladePlugin = engine.plugins[pluginClass] as BladePlugin?
                     ?: throw  Exception("BladePlugin is not existed")
-                cachedPlugin = plugin;
+                cachedPlugin = plugin
             }
 
             return cachedPlugin!!

@@ -1,7 +1,7 @@
 package com.imf.blade.messager
 
-class PageInfo (
+data class PageInfo (
     val name: String,
-    private val id: String,
-    private val arguments: Map<String, Any?>? = null): JSONConvertible {
+    val id: String,
+    val arguments: Map<String, Any>? = null): JSONConvertible {
 }

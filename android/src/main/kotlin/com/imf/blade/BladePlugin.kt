@@ -1,39 +1,40 @@
 package com.imf.blade
 
 import androidx.annotation.NonNull
+import com.imf.blade.container.nativeEvents.NativeEventListener
+import com.imf.blade.container.nativeEvents.PushFlutterPageEvent
+import com.imf.blade.container.nativeEvents.PushNativePageEvent
 import com.imf.blade.messager.FlutterChannel
+import com.imf.blade.messager.ok
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 
 /** BladePlugin */
-class BladePlugin: FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel : MethodChannel
+class BladePlugin: FlutterPlugin, NativeEventListener {
+  var flutterContainerManager = FlutterContainerManager()
   lateinit var flutterChannel: FlutterChannel
+  lateinit var platformCoordinator: PlatformCoordinator
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "blade")
-    channel.setMethodCallHandler(this)
-
-    flutterChannel = FlutterChannel(flutterPluginBinding.binaryMessenger, "blade")
-  }
-
-  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    } else {
-      result.notImplemented()
-    }
+    val binaryMessenger = flutterPluginBinding.binaryMessenger
+    val name = "blade"
+    flutterChannel = FlutterChannel(binaryMessenger, name)
+    platformCoordinator = PlatformCoordinator(binaryMessenger, flutterContainerManager, this)
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    channel.setMethodCallHandler(null)
+    platformCoordinator.release()
+  }
+
+  var delegate: BladeDelegate? = null
+
+  override fun pushFlutterPage(event: PushFlutterPageEvent) {
+    delegate?.pushFlutterPage(event.pageInfo)
+    event.result.ok()
+  }
+
+  override fun pushNativePage(event: PushNativePageEvent) {
+    delegate?.pushNativePage(event.pageInfo)
+    event.result.ok()
   }
 }

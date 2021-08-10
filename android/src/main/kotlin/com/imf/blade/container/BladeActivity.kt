@@ -149,7 +149,7 @@ open class BladeActivity : FlutterActivity(), FlutterViewContainer {
             return intent.getSerializableExtra(LaunchConfigs.EXTRA_URL_PARAM) as HashMap<String, Any>?
         }
 
-    override val uniqueId: String
+    override val id: String
         get() {
             return if (!intent.hasExtra(LaunchConfigs.EXTRA_UNIQUE_ID)) {
                 return who;

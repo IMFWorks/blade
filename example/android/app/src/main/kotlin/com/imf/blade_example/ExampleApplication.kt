@@ -14,11 +14,12 @@ class ExampleApplication : FlutterApplication() {
 }
 
 class BladeDelegateImpl: BladeDelegate {
-    override fun pushNativePage(pageInfo: PageInfo) {
 
+    override fun pushNativePage(pageInfo: PageInfo) {
+        print("pushNativePage")
     }
 
     override fun pushFlutterPage(pageInfo: PageInfo) {
-
+        print("pushFlutterPage")
     }
 }

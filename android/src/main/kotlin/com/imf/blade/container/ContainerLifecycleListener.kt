@@ -7,15 +7,17 @@ import com.imf.blade.messager.FlutterEventResponse
 import com.imf.blade.messager.FlutterEventResponseListener
 import com.imf.blade.messager.PageInfo
 
-class ContainerLifecycleListener(container: FlutterViewContainer, private val plugin: BladePlugin) {
-    private val pageInfo = PageInfo(container.url, container.uniqueId, container.urlParams)
+class ContainerLifecycleListener(val container: FlutterViewContainer, private val plugin: BladePlugin) {
+    private val pageInfo = PageInfo(container.url, container.id, container.urlParams)
 
     fun handlePushed() {
+        plugin.flutterContainerManager.addContainer(container)
         sendEvent(PagePushedEvent(pageInfo))
     }
 
     fun handleAppeared() {
         sendEvent(PageAppearedEvent(pageInfo))
+        plugin.flutterContainerManager.topContainer = container
     }
 
     fun handleDisappeared() {
@@ -28,6 +30,7 @@ class ContainerLifecycleListener(container: FlutterViewContainer, private val pl
 
     fun handleDestroyed() {
         sendEvent(PageDestroyedEvent(pageInfo))
+        plugin.flutterContainerManager.removeContainer(container.id)
     }
 
     fun handleForeground() {
@@ -52,8 +55,9 @@ class ContainerLifecycleListener(container: FlutterViewContainer, private val pl
         }
     }
 
-    private inline fun <reified T: FlutterEventResponse> sendEvent(event: FlutterEvent
-                                                                   , listener: FlutterEventResponseListener<T>) {
+    private inline fun <reified T: FlutterEventResponse> sendEvent(
+        event: FlutterEvent
+        , listener: FlutterEventResponseListener<T>) {
         plugin.flutterChannel.sendEvent(event, listener)
     }
 }
