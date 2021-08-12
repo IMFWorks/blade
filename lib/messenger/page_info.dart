@@ -8,6 +8,7 @@ class PageInfo {
         required this.id,
         this.arguments,
         this.withContainer}) {
+
     if (withContainer == null) {
       withContainer = true;
     }

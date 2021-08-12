@@ -21,8 +21,7 @@ import 'blade_page.dart';
 
 typedef BladeAppBuilder = Widget Function(Widget home);
 
-typedef PageBuilder = Widget Function(
-    BuildContext context, RouteSettings settings);
+typedef PageBuilder = Widget Function(BuildContext context, RouteSettings settings);
 
 class BladeApp extends StatefulWidget {
   const BladeApp(this.routeFactory,
@@ -372,7 +371,6 @@ class BladeAppState extends State<BladeApp> implements PageEventListener {
     }
     return count;
   }
-
 
   // PageEventListener
   void pushPage(PageInfo pageInfo) {

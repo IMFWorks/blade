@@ -1,6 +1,9 @@
 package com.imf.blade
 
+import android.app.Activity
 import android.app.Application
+import android.app.Application.ActivityLifecycleCallbacks
+import android.os.Bundle
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor.DartEntrypoint
@@ -21,6 +24,7 @@ class Blade {
 
     private lateinit var engine: FlutterEngine
     private var cachedPlugin: BladePlugin? = null
+    var topActivity: Activity? = null
 
 
     private constructor()
@@ -52,7 +56,7 @@ class Blade {
         plugin.delegate = delegate
 
         //3. register ActivityLifecycleCallbacks
-        //setupActivityLifecycleCallback(application, isBackForegroundEventOverridden)
+        application.registerActivityLifecycleCallbacks(BladeActivityLifecycle(this));
     }
 
     /**

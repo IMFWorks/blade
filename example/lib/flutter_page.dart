@@ -5,21 +5,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
-class FlutterRouteWidget extends StatefulWidget {
-  const FlutterRouteWidget(
-      {required this.params, this.message, required this.uniqueId});
+class FlutterPage extends StatefulWidget {
+  const FlutterPage({required this.params,
+    this.message, required this.uniqueId});
 
   final Map params;
   final String? message;
   final String uniqueId;
 
   @override
-  _FlutterRouteWidgetState createState() => _FlutterRouteWidgetState();
+  _FlutterPageState createState() => _FlutterPageState();
 }
 
-class _FlutterRouteWidgetState extends State<FlutterRouteWidget>
+class _FlutterPageState extends State<FlutterPage>
     with PageVisibilityObserver {
-  final TextEditingController _usernameController = TextEditingController();
+
   static const String _kTag = 'page_visibility';
 
   @override
@@ -66,15 +66,6 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget>
 
   @override
   Widget build(BuildContext context) {
-    Logger.log(
-        '${MediaQuery.of(context).padding.top} uniqueId=${widget.uniqueId}');
-    Logger.log(
-        '${MediaQuery.of(context).padding.bottom} uniqueId=${widget.uniqueId}');
-    Logger.log(
-        '${MediaQuery.of(context).size.width} uniqueId=${widget.uniqueId}');
-    Logger.log(
-        '${MediaQuery.of(context).size.height} uniqueId=${widget.uniqueId}');
-
     final String? message = widget.message;
     return Scaffold(
       appBar: AppBar(
@@ -114,33 +105,17 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget>
                 ])),
                 alignment: AlignmentDirectional.center,
               ),
-              const CupertinoTextField(
-                prefix: Icon(
-                  CupertinoIcons.person_solid,
-                  color: CupertinoColors.lightBackgroundGray,
-                  size: 28.0,
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 12.0),
-                clearButtonMode: OverlayVisibilityMode.editing,
-                textCapitalization: TextCapitalization.words,
-              ),
-              new TextField(
-                enabled: true,
-                autocorrect: true,
-                style: const TextStyle(
-                    fontSize: 20.0,
-                    color: const Color(0xFF222222),
-                    fontWeight: FontWeight.w500),
-              ),
-              new TextField(
-                controller: new TextEditingController(),
-                focusNode: FocusNode(),
-                enabled: true,
-                autocorrect: false,
-                style: const TextStyle(
-                    fontSize: 20.0,
-                    color: const Color(0xFF222222),
-                    fontWeight: FontWeight.w500),
+              InkWell(
+                child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    margin: const EdgeInsets.all(8.0),
+                    color: Colors.yellow,
+                    child: Text(
+                      'open native page',
+                      style: TextStyle(fontSize: 22.0, color: Colors.black),
+                    )),
+                onTap: () => BladeNavigator.of()
+                    .pushNativePage("nativePage",arguments: {'from': 'flutter page'}),
               ),
               InkWell(
                 child: Container(
@@ -148,24 +123,13 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget>
                     margin: const EdgeInsets.all(8.0),
                     color: Colors.yellow,
                     child: Text(
-                      'open firstFirst pagesswq',
+                      'open flutterPage',
                       style: TextStyle(fontSize: 22.0, color: Colors.black),
                     )),
                 onTap: () => BladeNavigator.of()
                     .push("firstFirst", withContainer: false),
               ),
-              InkWell(
-                child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    margin: const EdgeInsets.all(8.0),
-                    color: Colors.yellow,
-                    child: Text(
-                      'open imagepick demo',
-                      style: TextStyle(fontSize: 22.0, color: Colors.black),
-                    )),
-                onTap: () =>
-                     BladeNavigator.of().push("imagepick", withContainer: true),
-              ),
+
               InkWell(
                   child: Container(
                       padding: const EdgeInsets.all(8.0),
@@ -177,17 +141,7 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget>
                       )),
                   onTap: () =>
                       BladeNavigator.of().push("willPop", withContainer: true)),
-              InkWell(
-                  child: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      margin: const EdgeInsets.all(8.0),
-                      color: Colors.yellow,
-                      child: Text(
-                        'mediaquery demo',
-                        style: TextStyle(fontSize: 22.0, color: Colors.black),
-                      )),
-                  onTap: () => BladeNavigator.of()
-                      .push("mediaquery", withContainer: true)),
+
               InkWell(
                 child: Container(
                     padding: const EdgeInsets.all(8.0),

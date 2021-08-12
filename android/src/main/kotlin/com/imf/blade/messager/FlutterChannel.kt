@@ -31,6 +31,20 @@ class FlutterChannel(messenger: BinaryMessenger, name: String) {
             }
         })
     }
+
+    fun sendEvent(event: FlutterEvent) {
+        sendEvent(event, defaultListener)
+    }
+
+    private val defaultListener = object: FlutterEventResponseListener<FlutterEventResponse> {
+        override fun success(response: FlutterEventResponse) {
+            print("received response")
+        }
+
+        override fun failure(errorMessage: String?) {
+            print("received $errorMessage")
+        }
+    }
 }
 
 interface FlutterEventResponseListener<T> {

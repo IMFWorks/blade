@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 typedef _EventHandler = dynamic Function(dynamic arguments);
 
 class EventDispatcher {
-  final MethodChannel _channel = const MethodChannel('blade');
+  final MethodChannel _channel = const MethodChannel('com.imf.blade');
   final PageEventListener pageEventListener;
   final Map<String, _EventHandler> eventHandlers = Map<String, _EventHandler>();
 

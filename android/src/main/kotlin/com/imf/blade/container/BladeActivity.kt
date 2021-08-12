@@ -130,6 +130,7 @@ open class BladeActivity : FlutterActivity(), FlutterViewContainer {
             intent.putExtra(LaunchConfigs.ACTIVITY_RESULT_KEY, HashMap(result))
             setResult(RESULT_OK, intent)
         }
+
         finish()
     }
 
@@ -186,7 +187,7 @@ open class BladeActivity : FlutterActivity(), FlutterViewContainer {
         }
 
         fun urlParams(params: HashMap<String, Any>?): CachedEngineIntentBuilder {
-            this.params = params;
+            this.params = params
             return this
         }
 

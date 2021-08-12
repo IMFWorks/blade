@@ -1,10 +1,14 @@
 package com.imf.blade
 
 import androidx.annotation.NonNull
+import com.imf.blade.container.events.BackgroundEvent
+import com.imf.blade.container.events.ForegroundEvent
 import com.imf.blade.container.nativeEvents.NativeEventListener
 import com.imf.blade.container.nativeEvents.PushFlutterPageEvent
 import com.imf.blade.container.nativeEvents.PushNativePageEvent
 import com.imf.blade.messager.FlutterChannel
+import com.imf.blade.messager.FlutterEventResponse
+import com.imf.blade.messager.FlutterEventResponseListener
 import com.imf.blade.messager.ok
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -17,7 +21,7 @@ class BladePlugin: FlutterPlugin, NativeEventListener {
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     val binaryMessenger = flutterPluginBinding.binaryMessenger
-    val name = "blade"
+    val name = "com.imf.blade"
     flutterChannel = FlutterChannel(binaryMessenger, name)
     platformCoordinator = PlatformCoordinator(binaryMessenger, flutterContainerManager, this)
   }
@@ -36,5 +40,13 @@ class BladePlugin: FlutterPlugin, NativeEventListener {
   override fun pushNativePage(event: PushNativePageEvent) {
     delegate?.pushNativePage(event.pageInfo)
     event.result.ok()
+  }
+
+  fun handleForegroundEvent() {
+    flutterChannel.sendEvent(ForegroundEvent())
+  }
+
+  fun handleBackgroundEvent() {
+    flutterChannel.sendEvent(BackgroundEvent())
   }
 }

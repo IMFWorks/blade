@@ -1,3 +1,4 @@
+import 'package:blade/messenger/NativeEvent.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:blade/blade_app.dart';
@@ -66,6 +67,16 @@ class BladeNavigator {
       _appState.nativeRouterApi.pushNativeRoute(params);
       return Future<T?>(() => null);
     }
+  }
+
+  /// Push native page onto the hybrid stack.
+  Future<T?> pushNativePage<T extends Object>(String name,
+      {Map<String, Object>? arguments}) {
+
+      var pageInfo = PageInfo(name: name, id: "", arguments: arguments);
+      var event = NativeEvent("pushNativePage", pageInfo);
+      _appState.eventDispatcher.sendNativeEvent(event);
+      return Future<T?>(() => null);
   }
 
   Future<T> pushWithResult<T extends Object>(String pageName,

@@ -33,31 +33,7 @@ class ContainerLifecycleListener(val container: FlutterViewContainer, private va
         plugin.flutterContainerManager.removeContainer(container.id)
     }
 
-    fun handleForeground() {
-        sendEvent(ForegroundEvent());
-    }
-
-    fun handleBackground() {
-        sendEvent(BackgroundEvent());
-    }
-
     private fun sendEvent(event: FlutterEvent) {
-        plugin.flutterChannel.sendEvent(event, defaultListener)
-    }
-
-    private val defaultListener = object: FlutterEventResponseListener<FlutterEventResponse> {
-        override fun success(response: FlutterEventResponse) {
-            print("received response")
-        }
-
-        override fun failure(errorMessage: String?) {
-            print("received $errorMessage")
-        }
-    }
-
-    private inline fun <reified T: FlutterEventResponse> sendEvent(
-        event: FlutterEvent
-        , listener: FlutterEventResponseListener<T>) {
-        plugin.flutterChannel.sendEvent(event, listener)
+        plugin.flutterChannel.sendEvent(event)
     }
 }

@@ -15,7 +15,7 @@ typealias EventHandler = (MethodCall, MethodChannel.Result) -> Unit
 class PlatformCoordinator(messenger: BinaryMessenger,
                           private val flutterContainerManager: FlutterContainerManager,
                           nativeEventListener: NativeEventListener): NativeEventListener by nativeEventListener {
-    private val channel = MethodChannel(messenger, "blade")
+    private val channel = MethodChannel(messenger, "com.imf.blade")
     private val handlers = HashMap<String, EventHandler>()
 
     init {
@@ -36,27 +36,27 @@ class PlatformCoordinator(messenger: BinaryMessenger,
             if (call.arguments is String) {
                 val event = PopNativePageEvent.decode(call.arguments as String, result)
                 flutterContainerManager.handlePopNativePageEvent(event)
+            } else {
+                result.fatalError()
             }
-
-            result.fatalError()
         }
 
         handlers["pushNativePage"] = {call, result ->
             if (call.arguments is String) {
                 val event = PushNativePageEvent.decode(call.arguments as String, result)
                 pushNativePage(event);
+            } else {
+                result.fatalError()
             }
-
-            result.fatalError()
         }
 
         handlers["pushFlutterPage"] = {call, result ->
             if (call.arguments is String) {
                 val event = PushFlutterPageEvent.decode(call.arguments as String, result)
                 pushFlutterPage(event)
+            } else {
+                result.fatalError()
             }
-
-            result.fatalError()
         }
     }
 
