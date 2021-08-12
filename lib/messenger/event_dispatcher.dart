@@ -97,9 +97,8 @@ class EventDispatcher {
     return PageInfo.fromJson(jsonDecode(arguments));
   }
 
-  Future<bool> sendNativeEvent(NativeEvent event) async {
-    _channel.invokeMethod(event.method, jsonEncode(event.pageInfo.toJson()));
-    return true;
+  Future<T?> sendNativeEvent<T>(NativeEvent event) async {
+    return _channel.invokeMethod(event.method, jsonEncode(event.pageInfo.toJson()));
   }
 }
 

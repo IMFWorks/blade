@@ -71,12 +71,11 @@ class BladeNavigator {
 
   /// Push native page onto the hybrid stack.
   Future<T?> pushNativePage<T extends Object>(String name,
-      {Map<String, Object>? arguments}) {
+      {Map<String, Object>? arguments}) async {
 
       var pageInfo = PageInfo(name: name, id: "", arguments: arguments);
       var event = NativeEvent("pushNativePage", pageInfo);
-      _appState.eventDispatcher.sendNativeEvent(event);
-      return Future<T?>(() => null);
+      return _appState.eventDispatcher.sendNativeEvent(event);
   }
 
   Future<T> pushWithResult<T extends Object>(String pageName,

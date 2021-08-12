@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import com.imf.blade.Blade
+import com.imf.blade.util.toMap
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode
@@ -14,6 +15,11 @@ import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.platform.PlatformPlugin
 import java.util.*
+
+interface ActivityResultListener {
+    fun success(result: HashMap<String,Any>?)
+    fun cancel()
+}
 
 open class BladeActivity : FlutterActivity(), FlutterViewContainer {
     private val who = UUID.randomUUID().toString()
@@ -101,6 +107,18 @@ open class BladeActivity : FlutterActivity(), FlutterViewContainer {
         super.onDestroy()
 
         containerLifecycleListener.handleDestroyed()
+    }
+
+    var activityResultListener: ActivityResultListener? = null
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK) {
+            activityResultListener?.success(data?.extras?.toMap())
+        } else {
+            activityResultListener?.cancel()
+        }
     }
 
     override fun shouldRestoreAndSaveState(): Boolean {

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:blade/blade_navigator.dart';
 import 'package:blade/logger.dart';
 import 'package:blade/page_visibility.dart';
@@ -114,8 +116,11 @@ class _FlutterPageState extends State<FlutterPage>
                       'open native page',
                       style: TextStyle(fontSize: 22.0, color: Colors.black),
                     )),
-                onTap: () => BladeNavigator.of()
-                    .pushNativePage("nativePage",arguments: {'from': 'flutter page'}),
+                onTap: ()  async {
+                  var result = await BladeNavigator.of()
+                    .pushNativePage("nativePage",arguments: {'from': 'flutter page'});
+                  print(result);
+                },
               ),
               InkWell(
                 child: Container(

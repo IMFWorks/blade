@@ -33,13 +33,11 @@ class BladePlugin: FlutterPlugin, NativeEventListener {
   var delegate: BladeDelegate? = null
 
   override fun pushFlutterPage(event: PushFlutterPageEvent) {
-    delegate?.pushFlutterPage(event.pageInfo)
-    event.result.ok()
+    delegate?.pushFlutterPage(event)
   }
 
   override fun pushNativePage(event: PushNativePageEvent) {
-    delegate?.pushNativePage(event.pageInfo)
-    event.result.ok()
+    delegate?.pushNativePage(event)
   }
 
   fun handleForegroundEvent() {
