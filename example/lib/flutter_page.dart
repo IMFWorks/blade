@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:blade/blade_navigator.dart';
 import 'package:blade/logger.dart';
-import 'package:blade/page_visibility.dart';
+import 'package:blade/container/page_visibility.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -132,7 +132,7 @@ class _FlutterPageState extends State<FlutterPage>
                       style: TextStyle(fontSize: 22.0, color: Colors.black),
                     )),
                 onTap: () => BladeNavigator.of()
-                    .push("firstFirst", withContainer: false),
+                    .pushFlutterPage("firstFirst"),
               ),
 
               InkWell(
@@ -145,7 +145,7 @@ class _FlutterPageState extends State<FlutterPage>
                         style: TextStyle(fontSize: 22.0, color: Colors.black),
                       )),
                   onTap: () =>
-                      BladeNavigator.of().push("willPop", withContainer: true)),
+                      BladeNavigator.of().pushFlutterPage("willPop")),
 
               InkWell(
                 child: Container(
@@ -167,7 +167,7 @@ class _FlutterPageState extends State<FlutterPage>
                       margin: const EdgeInsets.all(8.0),
                       color: Colors.yellow,
                       child: Text(
-                        'returning data demo',
+                        'returning result from flutter page',
                         style: TextStyle(fontSize: 22.0, color: Colors.black),
                       )),
                   // onTap: () async {
@@ -176,7 +176,7 @@ class _FlutterPageState extends State<FlutterPage>
                   //   print('Get result: $result');
                   // }),
                   onTap: () => BladeNavigator.of()
-                      .push("returnData", withContainer: true)
+                      .pushFlutterPage("returnResult", arguments: {'param1': '100'})
                       .then((onValue) => print('Get result: $onValue'))),
             ],
           ),

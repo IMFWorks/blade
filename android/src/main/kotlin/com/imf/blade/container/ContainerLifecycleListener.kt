@@ -25,7 +25,8 @@ class ContainerLifecycleListener(val container: FlutterViewContainer, private va
     }
 
     fun handlePopped() {
-        sendEvent(PagePoppedEvent(pageInfo));
+        val resultPageInfo = PageInfo(pageInfo.name, pageInfo.id)
+        sendEvent(PagePoppedEvent(resultPageInfo));
     }
 
     fun handleDestroyed() {

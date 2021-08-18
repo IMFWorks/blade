@@ -1,4 +1,5 @@
 import 'package:blade/blade_app.dart';
+import 'package:blade_example/return_result_page.dart';
 import 'package:blade_example/simple_widget.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -70,6 +71,11 @@ class _MyAppState extends State<MyApp> {
     'tab_flutter2': (context, settings) {
       return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
           "This is a custom FlutterView");
+    },
+
+    'returnResult': (context, settings) {
+      return ReturnResultPage(params: settings.arguments as Map<dynamic, dynamic>,
+          uniqueId: "");
     },
   };
 

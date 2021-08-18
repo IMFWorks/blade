@@ -1,20 +1,14 @@
+import 'package:blade/messenger/NativeEvents/json_convertible.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'page_info.g.dart';
 
 @JsonSerializable()
-class PageInfo {
+class PageInfo implements JsonConvertible{
   PageInfo({required this.name,
         required this.id,
-        this.arguments,
-        this.withContainer}) {
+        this.arguments}) ;
 
-    if (withContainer == null) {
-      withContainer = true;
-    }
-  }
-
-  bool? withContainer;
   String name;
   String id;
   Map<String, dynamic>? arguments;

@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart';
 
 import 'package:blade/messenger/page_info.dart';
 import 'package:blade/blade_app.dart';
+import '../logger.dart';
 import 'blade_page.dart';
 import 'overlay_entry.dart';
 
@@ -62,20 +63,30 @@ class BladeContainer extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => BladeContainerState();
 
-  void push(BladePage<dynamic> page) {
+  Future<T?> push<T extends Object?>(BladePage<T> page) {
     _pages.add(page);
     final router = page.createRoute(_navKey.currentContext!);
-    navigator?.push<dynamic>(router);
+    return navigator!.push<T>(router);
   }
 
-  void pop() {
-    navigator?.pop();
+  void pop<T extends Object?>([T? result ])  {
+    navigator?.pop(result);
   }
 
   void popUntil(String pageName) {
     navigator?.popUntil((route) {
       return route.settings.name == pageName;
     });
+  }
+
+  BladePage? getPageById(String id) {
+    try {
+      return pages.singleWhere((BladePage element) => element.pageInfo.id == id);
+    } catch (e) {
+      Logger.logObject(e);
+    }
+
+    return null;
   }
 }
 

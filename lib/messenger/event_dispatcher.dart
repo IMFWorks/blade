@@ -1,15 +1,19 @@
 import 'dart:convert';
 
 import 'package:blade/messenger/FlutterEventResponse.dart';
-import 'package:blade/messenger/NativeEvent.dart';
+import 'package:blade/messenger/NativeEvents/native_event.dart';
 import 'package:blade/messenger/page_info.dart';
 import 'package:flutter/services.dart';
 
 typedef _EventHandler = dynamic Function(dynamic arguments);
 
-class EventDispatcher {
+abstract class EventSender{
+  Future<T?> sendNativeEvent<T>(NativeEvent event);
+}
+
+class EventDispatcher implements EventSender {
   final MethodChannel _channel = const MethodChannel('com.imf.blade');
-  final PageEventListener pageEventListener;
+  PageEventListener pageEventListener;
   final Map<String, _EventHandler> eventHandlers = Map<String, _EventHandler>();
 
   late final String ok = jsonEncode(FlutterEventResponse(Status.ok).toJson());
@@ -18,7 +22,6 @@ class EventDispatcher {
 
   EventDispatcher(this.pageEventListener) {
     _registerHandler();
-
     _channel.setMethodCallHandler(_methodCallHandler);
   }
 
@@ -98,7 +101,7 @@ class EventDispatcher {
   }
 
   Future<T?> sendNativeEvent<T>(NativeEvent event) async {
-    return _channel.invokeMethod(event.method, jsonEncode(event.pageInfo.toJson()));
+    return _channel.invokeMethod(event.method, jsonEncode(event.toJson()));
   }
 }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
-import 'messenger/page_info.dart';
+import '../messenger/page_info.dart';
 
 typedef BladeRouteFactory = Route<dynamic> Function(
     RouteSettings settings, String uniqueId);
@@ -13,9 +13,9 @@ class BladePage<T> extends Page<T> {
   final BladeRouteFactory routeFactory;
   final PageInfo pageInfo;
 
-  static BladePage<dynamic> create(
+  static BladePage<T> create<T>(
       PageInfo pageInfo, BladeRouteFactory routeFactory) {
-    return BladePage<dynamic>(
+    return BladePage<T>(
         key: UniqueKey(), pageInfo: pageInfo, routeFactory: routeFactory);
   }
 
@@ -24,7 +24,7 @@ class BladePage<T> extends Page<T> {
 
   @override
   String toString() =>
-      '${objectRuntimeType(this, 'BladePage')}(name:$name, uniqueId:${pageInfo.id}, arguments:$arguments)';
+      '${objectRuntimeType(this, 'BladePage')}(name:$name, id:${pageInfo.id}, arguments:$arguments)';
 
   @override
   Route<T> createRoute(BuildContext context) {

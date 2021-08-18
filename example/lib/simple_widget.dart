@@ -1,4 +1,4 @@
-import 'package:blade/page_visibility.dart';
+import 'package:blade/container/page_visibility.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:blade/blade_navigator.dart';
@@ -95,7 +95,7 @@ class _SimpleWidgetState extends State<SimpleWidget>
                       'open native page',
                       style: TextStyle(fontSize: 22.0, color: Colors.black),
                     )),
-                onTap: () => BladeNavigator.of().push("native"),
+                onTap: () => BladeNavigator.of().pushNativePage("native"),
               ),
               InkWell(
                 child: Container(
@@ -106,7 +106,7 @@ class _SimpleWidgetState extends State<SimpleWidget>
                       'open flutter page',
                       style: TextStyle(fontSize: 22.0, color: Colors.black),
                     )),
-                onTap: () => BladeNavigator.of().push("flutterPage",
+                onTap: () => BladeNavigator.of().pushFlutterPage("flutterPage",
                     arguments: <String, String>{'from': widget.uniqueId}),
               ),
               InkWell(
@@ -118,8 +118,7 @@ class _SimpleWidgetState extends State<SimpleWidget>
                       'open flutter page with FlutterView',
                       style: TextStyle(fontSize: 22.0, color: Colors.black),
                     )),
-                onTap: () => BladeNavigator.of().push("flutterPage",
-                    withContainer: true,
+                onTap: () => BladeNavigator.of().pushFlutterPage("flutterPage",
                     arguments: <String, Object>{'from': widget.uniqueId, 'index': 100}),
               ),
               InkWell(

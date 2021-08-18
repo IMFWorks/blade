@@ -1,28 +1,44 @@
-import 'package:blade/messenger/NativeEvent.dart';
-import 'package:flutter/widgets.dart';
+import 'dart:async';
+import 'dart:io';
 
-import 'package:blade/blade_app.dart';
-import 'package:blade/messages.dart';
-import 'package:blade/overlay_entry.dart';
+import 'package:blade/container/container_manager.dart';
+import 'package:blade/messenger/nativeEvents/push_flutter_page_event.dart';
+import 'package:blade/messenger/nativeEvents/push_native_page_event.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:uuid/uuid.dart';
 
-import 'blade_container.dart';
+import 'blade_app.dart';
+import 'container/blade_container.dart';
+import 'container/blade_page.dart';
+import 'container/overlay_entry.dart';
 import 'logger.dart';
-import 'package:blade/messenger/page_info.dart';
+import 'messenger/event_dispatcher.dart';
+import 'messenger/nativeEvents/pop_native_page_event.dart';
+import 'messenger/page_info.dart';
 
-/// A object that manages a set of pages with a hybrid stack.
-///
-class BladeNavigator {
-  const BladeNavigator(this._appState);
-  final BladeAppState _appState;
+mixin BladeNavigator {
+  ContainerManager get containerManager;
+  EventSender get eventSender;
+  BladeContainer get topContainer {
+    return containerManager.topContainer;
+  }
 
-  /// Retrieves the instance of [BladeNavigator]
+  final List<BladeContainer> _pendingPopContainers = <BladeContainer>[];
+
+  void initBladeNavigator(String initialRoute) {
+    final name = initialRoute;
+    final pageInfo = PageInfo(name: name, id: _createPageId(name));
+    final initialContainer = containerManager.createContainer(pageInfo);
+    containerManager.addContainer(initialContainer);
+  }
+
   static BladeNavigator of() {
     BuildContext? context = overlayKey.currentContext;
     if (context != null) {
       BladeAppState? appState;
       appState = context.findAncestorStateOfType<BladeAppState>();
       if (appState != null) {
-        return BladeNavigator(appState);
+        return appState;
       } else {
         throw Exception('appState is null');
       }
@@ -31,99 +47,193 @@ class BladeNavigator {
     }
   }
 
-  String? getUniqueIdFromName(String pageName) {
-    try {
-      return _appState.containers
-          .firstWhere((element) =>
-              element.pageInfo.name == pageName ||
-              element.pages
-                  .any((element) => element.pageInfo.name == pageName))
-          .pageInfo
-          .id;
-    } catch (e) {
-      Logger.logObject(e);
-    }
-    return null;
-  }
-
-  /// Whether this page with the given [name] is a flutter page
-  ///
-  /// If the name of route can be found in route table then return true,
-  /// otherwise return false.
-  bool isFlutterPage(String name) {
-    return _appState.routeFactory(RouteSettings(name: name), "") != null;
-  }
-
-  /// Push the page with the given [name] onto the hybrid stack.
-  Future<T?> push<T extends Object>(String name,
-      {Map<String, Object>? arguments, bool withContainer = true}) {
-    if (isFlutterPage(name)) {
-      return _appState.pushWithResult(name,
-          arguments: arguments, withContainer: withContainer);
-    } else {
-      final CommonParams params = CommonParams()
-        ..pageName = name
-        ..arguments = arguments;
-      _appState.nativeRouterApi.pushNativeRoute(params);
-      return Future<T?>(() => null);
-    }
-  }
-
   /// Push native page onto the hybrid stack.
   Future<T?> pushNativePage<T extends Object>(String name,
       {Map<String, Object>? arguments}) async {
-
-      var pageInfo = PageInfo(name: name, id: "", arguments: arguments);
-      var event = NativeEvent("pushNativePage", pageInfo);
-      return _appState.eventDispatcher.sendNativeEvent(event);
+    String id = _createPageId(name);
+    final pageInfo = PageInfo(name: name, id: id, arguments:  arguments);
+    final event = PushNativePageEvent(pageInfo);
+    return eventSender.sendNativeEvent(event);
   }
 
-  Future<T> pushWithResult<T extends Object>(String pageName,
-      {Map<String, Object>? arguments, bool withContainer = true}) {
-    return _appState.pushWithResult(pageName,
-        arguments: arguments, withContainer: withContainer);
+  Future<T?> pushFlutterPageOnNative<T>(String name,
+      {Map<String, Object>? arguments
+      }) {
+    String id = _createPageId(name);
+    final pageInfo = PageInfo(name: name, id: id, arguments:  arguments);
+    final pushFlutterPageEvent = PushFlutterPageEvent(pageInfo);
+    return eventSender.sendNativeEvent(pushFlutterPageEvent);
   }
 
-  Future<void> pushNativeRoute(CommonParams arg) {
-    return _appState.nativeRouterApi.pushNativeRoute(arg);
+  Future<T?> pushFlutterPage<T>(String name,
+      {Map<String, Object>? arguments}) {
+    String id = _createPageId(name);
+    final pageInfo = PageInfo(name: name, id: id, arguments:  arguments);
+    final page = BladePage.create<T>(pageInfo, topContainer.routeFactory);
+    return topContainer.push(page);
   }
 
-  void enablePanGesture(String uniqueId, bool enable) {
-    return _appState.enablePanGesture(uniqueId, enable);
+  /// Push flutter page onto the hybrid stack.
+  void push<T>(PageInfo pageInfo) {
+    final id = pageInfo.id;
+    final BladeContainer? container = containerManager.getContainerById(id);
+    if (container != null) {
+      if (topContainer != container) {
+        // PageVisibilityBinding.instance
+        //     .dispatchPageHideEvent(_getCurrentPageRoute());
+
+        containerManager.removeContainer(container);
+        container.detach();
+        containerManager.addContainer(container);
+        insertEntry(container);
+        // PageVisibilityBinding.instance
+        //     .dispatchPageShowEvent(container.topPage.route);
+      } else {
+        // PageVisibilityBinding.instance
+        //     .dispatchPageShowEvent(_getCurrentPageRoute());
+      }
+    } else {
+      final container = containerManager.createContainer(pageInfo);
+      containerManager.addContainer(container);
+      insertEntry(container);
+    }
+
+    Logger.log('push page,'
+            ' id=$id, '
+            'existed=$container,'
+            ' withContainer=$pageInfo.withContainer, '
+            'arguments:$pageInfo.arguments');
   }
 
-  /// Pop the top-most page off the hybrid stack.
-  Future<void> pop<T extends Object>([T? result]) async {
-    return _appState.popWithResult(result);
+  void pop<T>({String? id, T? result}) async {
+    BladeContainer? container;
+    if (id != null) {
+      container = containerManager.getContainerById(id);
+      if (container == null) {
+        return;
+      }
+    } else {
+      container = topContainer;
+    }
+
+    if (container != topContainer) {
+      return;
+    }
+    if (container.pages.length > 1) {
+      container.pop(result);
+    } else {
+      _popContainer(container, result as Map<String, dynamic>?);
+    }
+
+    Logger.log('pop , id=$id, $container');
   }
 
-  Future<void> popUtil<T extends Object>(String uniqueId, [T? result]) async {
-    await _appState.popUntil(uniqueId);
+  Future<void> popUtil<T extends Object>(String id, [T? result]) async {
   }
 
-  /// Remove the page with the given [uniqueId] from hybrid stack.
-  ///
-  /// This API is for backwards compatibility.
-  void remove(String uniqueId) {
-    _appState.pop(uniqueId: uniqueId);
+  //
+  // Future<bool> popUntil(String uniqueId,
+  //     {Map<dynamic, dynamic>? arguments}) async {
+  //   final BladeContainer? container = _findContainerByUniqueId(uniqueId);
+  //   if (container == null) {
+  //     Logger.error('uniqueId=$uniqueId not find');
+  //     return false;
+  //   }
+  //   final BladePage? page = _findPageByUniqueId(uniqueId, container);
+  //   if (page == null) {
+  //     Logger.error('uniqueId=$uniqueId page not find');
+  //     return false;
+  //   }
+  //
+  //   if (container != topContainer) {
+  //     final CommonParams params = CommonParams()
+  //       ..pageName = container.pageInfo.name
+  //       ..uniqueId = container.pageInfo.id
+  //       ..arguments = container.pageInfo.arguments;
+  //     await _nativeRouterApi.popUtilRouter(params);
+  //   }
+  //   container.popUntil(page.pageInfo.name);
+  //   Logger.log(
+  //       'pop container, uniqueId=$uniqueId, arguments:$arguments, $container');
+  //   return true;
+  // }
+  //
+
+
+  // void enablePanGesture(String uniqueId, bool enable) {
+  //   final PanGestureParams params = PanGestureParams()
+  //     ..uniqueId = uniqueId
+  //     ..enable = enable;
+  //   nativeRouterApi.enablePanGesture(params);
+  // }
+
+  void _popContainer(BladeContainer container, Map<String, dynamic>? result) async {
+    Logger.log('_removeContainer ,  uniqueId=${container.pageInfo.id}');
+    containerManager.removeContainer(container);
+    _pendingPopContainers.add(container);
+
+
+    final pageInfo = PageInfo(name: container.pageInfo.name,
+        id: container.pageInfo.id,
+        arguments:result);
+    final popNativePageEvent = PopNativePageEvent(pageInfo);
+    eventSender.sendNativeEvent(popNativePageEvent);
+
+    if (Platform.isAndroid) {
+      _removeContainer(container.pageInfo.id,
+          targetContainers: _pendingPopContainers);
+    }
   }
 
-  /// Retrieves the infomation of the top-most flutter page
-  /// on the hybrid stack, such as uniqueId, pagename, etc;
-  ///
-  /// This is a legacy API for backwards compatibility.
+  void _removeContainer(String id, {required List<BladeContainer> targetContainers}) {
+    final removedContainer = containerManager.removeContainerById(
+        id, targetContainers);
+    removedContainer?.detach();
+  }
+
+
+  // Route<dynamic>? _getCurrentPageRoute() {
+  //   return topContainer.topPage.route;
+  // }
+  //
+  // String _getCurrentPageUniqueId() {
+  //   return topContainer.topPage.pageInfo.id;
+  // }
+  //
+  // String? _getPreviousPageUniqueId() {
+  //   assert(topContainer.pages != null);
+  //   final int pageCount = topContainer.pages.length;
+  //   if (pageCount > 1) {
+  //     return topContainer.pages[pageCount - 2].pageInfo.id;
+  //   } else {
+  //     final int containerCount = containers.length;
+  //     if (containerCount > 1) {
+  //       return containers[containerCount - 2].pages.last.pageInfo.id;
+  //     }
+  //   }
+  //
+  //   return null;
+  // }
+  //
+  // Route<dynamic>? _getPreviousPageRoute() {
+  //   final int pageCount = topContainer.pages.length;
+  //   if (pageCount > 1) {
+  //     return topContainer.pages[pageCount - 2].route;
+  //   } else {
+  //     final int containerCount = containers.length;
+  //     if (containerCount > 1) {
+  //       return containers[containerCount - 2].pages.last.route;
+  //     }
+  //   }
+  //
+  //   return null;
+  // }
+
   PageInfo getTopPageInfo() {
-    return _appState.getTopPageInfo();
+    return topContainer.topPage.pageInfo;
   }
 
-  PageInfo? getTopByContext(BuildContext context) {
-    return BladeContainer.of(context)?.pageInfo;
-  }
-
-  /// Return the number of flutter pages
-  ///
-  /// This is a legacy API for backwards compatibility.
-  int pageSize() {
-    return _appState.pageSize();
+  String _createPageId(String pageName) {
+    return Uuid().v4() + '#$pageName';
   }
 }
