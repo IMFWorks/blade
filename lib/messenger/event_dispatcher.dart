@@ -7,26 +7,26 @@ import 'package:flutter/services.dart';
 
 typedef _EventHandler = dynamic Function(dynamic arguments);
 
-abstract class EventSender{
-  Future<T?> sendNativeEvent<T>(NativeEvent event);
-}
-
-class EventDispatcher implements EventSender {
+class EventDispatcher {
   final MethodChannel _channel = const MethodChannel('com.imf.blade');
-  PageEventListener pageEventListener;
-  final Map<String, _EventHandler> eventHandlers = Map<String, _EventHandler>();
+  final Map<String, _EventHandler> _eventHandlers = Map<String, _EventHandler>();
+
+  PageEventListener? _pageEventListener;
+  set pageEventListener(PageEventListener pageEventListener) {
+    _pageEventListener = pageEventListener;
+  }
 
   late final String ok = jsonEncode(FlutterEventResponse(Status.ok).toJson());
   late final String noContent = jsonEncode(FlutterEventResponse(Status.noContent).toJson());
   late final String notFound = jsonEncode(FlutterEventResponse(Status.notFound).toJson());
 
-  EventDispatcher(this.pageEventListener) {
+  EventDispatcher() {
     _registerHandler();
     _channel.setMethodCallHandler(_methodCallHandler);
   }
 
   Future<dynamic> _methodCallHandler(MethodCall call) async {
-    final handler = eventHandlers[call.method];
+    final handler = _eventHandlers[call.method];
     if (handler != null) {
       return handler(call.arguments);
     }
@@ -36,58 +36,58 @@ class EventDispatcher implements EventSender {
 
   _registerHandler() {
     // register handler
-    eventHandlers["pagePushed"] = (dynamic arguments) async {
+    _eventHandlers["pagePushed"] = (dynamic arguments) async {
       final pageInfo = _decodePageInfo(arguments);
       if (pageInfo != null) {
-        pageEventListener.pushPage(pageInfo);
+        _pageEventListener?.pushPage(pageInfo);
       }
 
       return ok;
     };
 
-    eventHandlers["pagePopped"] = (dynamic arguments) async {
+    _eventHandlers["pagePopped"] = (dynamic arguments) async {
       final pageInfo = _decodePageInfo(arguments);
       if (pageInfo != null) {
-        pageEventListener.popPage(pageInfo);
+        _pageEventListener?.popPage(pageInfo);
       }
 
       return ok;
     };
 
-    eventHandlers["pageDestroyed"] = (dynamic arguments) async {
+    _eventHandlers["pageDestroyed"] = (dynamic arguments) async {
       final pageInfo = _decodePageInfo(arguments);
       if (pageInfo != null) {
-        pageEventListener.removePage(pageInfo);
+        _pageEventListener?.removePage(pageInfo);
       }
 
       return ok;
     };
 
-    eventHandlers["pageAppeared"] = (dynamic arguments) async {
+    _eventHandlers["pageAppeared"] = (dynamic arguments) async {
       final pageInfo = _decodePageInfo(arguments);
       if (pageInfo != null) {
-        pageEventListener.onPageAppeared(pageInfo);
+        _pageEventListener?.onPageAppeared(pageInfo);
       }
 
       return ok;
     };
 
-    eventHandlers["pageDisappeared"] = (dynamic arguments) async {
+    _eventHandlers["pageDisappeared"] = (dynamic arguments) async {
       final pageInfo = _decodePageInfo(arguments);
       if (pageInfo != null) {
-        pageEventListener.onPageDisappeared(pageInfo);
+        _pageEventListener?.onPageDisappeared(pageInfo);
       }
 
       return ok;
     };
 
-    eventHandlers["onForeground"] = (dynamic arguments) async {
-      pageEventListener.onForeground();
+    _eventHandlers["onForeground"] = (dynamic arguments) async {
+      _pageEventListener?.onForeground();
       return ok;
     };
 
-    eventHandlers["onBackground"] = (dynamic arguments) async {
-      pageEventListener.onBackground();
+    _eventHandlers["onBackground"] = (dynamic arguments) async {
+      _pageEventListener?.onBackground();
       return ok;
     };
   }
