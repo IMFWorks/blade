@@ -10,7 +10,7 @@ abstract class BladeNavigator {
       BladeAppState? appState;
       appState = context.findAncestorStateOfType<BladeAppState>();
       if (appState != null) {
-        return appState.navigator;
+        return appState.hybridNavigator;
       } else {
         throw Exception('appState is null');
       }

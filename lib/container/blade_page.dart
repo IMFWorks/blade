@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
@@ -19,8 +21,18 @@ class BladePage<T> extends Page<T> {
         key: UniqueKey(), pageInfo: pageInfo, routeFactory: routeFactory);
   }
 
-  final List<Route<T>> _route = <Route<T>>[];
-  Route<T>? get route => _route.isEmpty ? null : _route.first;
+  Route<T>? _route;
+  Route<T>? get route => _route;
+
+  /// A future that completes when this page is popped.
+  Future<T> get popped => _popCompleter.future;
+  final Completer<T> _popCompleter = Completer<T>();
+
+  void didComplete(T? result) {
+    if (!_popCompleter.isCompleted) {
+      _popCompleter.complete(result);
+    }
+  }
 
   @override
   String toString() =>
@@ -28,8 +40,8 @@ class BladePage<T> extends Page<T> {
 
   @override
   Route<T> createRoute(BuildContext context) {
-    _route.clear();
-    _route.add(routeFactory(this, pageInfo.id) as Route<T>);
-    return _route.first;
+    final route = (routeFactory(this, pageInfo.id) as Route<T>);
+    _route = route;
+    return route;
   }
 }

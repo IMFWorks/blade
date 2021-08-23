@@ -1,3 +1,4 @@
+import 'package:blade/container/blade_container.dart';
 import 'package:blade/navigator/platform_event_handler.dart';
 import 'package:blade/messenger/event_dispatcher.dart';
 import 'package:blade/navigator/pop_mixin.dart';
@@ -11,7 +12,7 @@ import 'base_navigator.dart';
 import 'blade_navigator_mixin.dart';
 
 class HybridNavigator extends BaseNavigator with PushMixin,
-    popMixin,
+    PopMixin,
     BladeNavigatorMixin,
     PlatformEventHandler {
   late EventDispatcher eventDispatcher;

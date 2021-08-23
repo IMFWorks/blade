@@ -15,7 +15,7 @@ mixin PushMixin on BaseNavigator {
         //     .dispatchPageHideEvent(_getCurrentPageRoute());
 
         containerManager.removeContainer(container);
-        container.detach();
+        container.entryRemoved();
         containerManager.addContainer(container);
         insertEntry(container);
         // PageVisibilityBinding.instance

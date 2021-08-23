@@ -31,13 +31,13 @@ class BladeApp extends StatefulWidget {
 }
 
 class BladeAppState extends State<BladeApp>   {
-  late HybridNavigator navigator;
+  late HybridNavigator hybridNavigator;
   final Set<int> _activePointers = <int>{};
 
 
   @override
   void initState() {
-    navigator = HybridNavigator(widget.routeFactory, widget.initialRoute);
+    hybridNavigator = HybridNavigator(widget.routeFactory, widget.initialRoute);
     super.initState();
   }
 
@@ -45,9 +45,9 @@ class BladeAppState extends State<BladeApp>   {
   Widget build(BuildContext context) {
     return widget.appBuilder(WillPopScope(
         onWillPop: () async {
-          final bool? canPop = navigator.topContainer.navigator?.canPop();
+          final bool? canPop = hybridNavigator.topContainer.canPop();
           if (canPop != null && canPop) {
-            navigator.topContainer.navigator?.pop();
+            hybridNavigator.topContainer.pop();
             return true;
           }
           return false;
@@ -66,7 +66,7 @@ class BladeAppState extends State<BladeApp>   {
     final List<OverlayEntry> entries = <OverlayEntry>[];
     final OverlayState? overlayState = overlayKey.currentState;
     if (overlayState == null) {
-      for (BladeContainer container in navigator.containerManager.containers) {
+      for (BladeContainer container in hybridNavigator.containerManager.containers) {
         final ContainerOverlayEntry entry = ContainerOverlayEntry(container);
         entries.add(entry);
       }

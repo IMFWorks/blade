@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:blade/blade_navigator.dart';
 import 'package:blade/logger.dart';
 import 'package:blade/container/page_visibility.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 
 class FlutterPage extends StatefulWidget {
   const FlutterPage({required this.params,

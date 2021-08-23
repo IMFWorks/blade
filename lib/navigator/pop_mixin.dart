@@ -6,7 +6,7 @@ import 'package:blade/messenger/page_info.dart';
 import 'package:blade/navigator/base_navigator.dart';
 import '../logger.dart';
 
-mixin popMixin on BaseNavigator {
+mixin PopMixin on BaseNavigator {
   final List<BladeContainer> _pendingPopContainers = <BladeContainer>[];
 
   void pop<T>({String? id, T? result}) async {
@@ -37,7 +37,7 @@ mixin popMixin on BaseNavigator {
   }
 
   void popContainer(BladeContainer container, Map<String, dynamic>? result) async {
-    Logger.log('_removeContainer ,  uniqueId=${container.pageInfo.id}');
+    Logger.log('_popContainer ,  id=${container.pageInfo.id}');
     containerManager.removeContainer(container);
     _pendingPopContainers.add(container);
 
@@ -53,9 +53,14 @@ mixin popMixin on BaseNavigator {
     }
   }
 
+  void remove(PageInfo pageInfo) {
+    _removeContainer(pageInfo.id, targetContainers: _pendingPopContainers);
+    _removeContainer(pageInfo.id, targetContainers: containerManager.containers);
+  }
+
   void _removeContainer(String id, {required List<BladeContainer> targetContainers}) {
     final removedContainer = containerManager.removeContainerById(
         id, targetContainers);
-    removedContainer?.detach();
+    removedContainer?.entryRemoved();
   }
 }

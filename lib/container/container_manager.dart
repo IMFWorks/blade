@@ -1,13 +1,12 @@
 
 import 'package:blade/messenger/page_info.dart';
-import 'package:flutter/cupertino.dart';
 
 import '../logger.dart';
 import 'blade_container.dart';
 import 'blade_page.dart';
 
 class ContainerManager {
-  final List<BladeContainer> _containers = <BladeContainer>[];
+  final _containers = <BladeContainer>[];
   List<BladeContainer> get containers => _containers;
   BladeContainer get topContainer => containers.last;
 
@@ -17,10 +16,7 @@ class ContainerManager {
   }
 
   BladeContainer createContainer(PageInfo pageInfo) {
-    return BladeContainer(
-        key: ValueKey<String>(pageInfo.id),
-        pageInfo: pageInfo,
-        routeFactory: routeFactory);
+    return BladeContainer(routeFactory, pageInfo);
   }
 
   BladeContainer? getContainerById(String id) {

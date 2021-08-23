@@ -4,7 +4,7 @@ import 'package:blade/navigator/base_navigator.dart';
 import 'package:blade/navigator/pop_mixin.dart';
 import 'package:blade/navigator/push_mixin.dart';
 
-mixin PlatformEventHandler on BaseNavigator, PushMixin, popMixin implements PageEventListener {
+mixin PlatformEventHandler on BaseNavigator, PushMixin, PopMixin implements PageEventListener {
 
   void init() {
     super.init();
@@ -22,11 +22,11 @@ mixin PlatformEventHandler on BaseNavigator, PushMixin, popMixin implements Page
   }
 
   void removePage(PageInfo pageInfo) {
-    // _removeContainer(pageInfo.id, targetContainers: _pendingPopcontainers);
-    // _removeContainer(pageInfo.id, targetContainers: _containers);
+    remove(pageInfo);
   }
 
   void onPageAppeared(PageInfo pageInfo) {
+    print('onPageAppeared');
     // PageVisibilityBinding.instance
     //     .dispatchPageShowEvent(_getCurrentPageRoute());
   }

@@ -6,7 +6,7 @@ import 'package:blade/messenger/nativeEvents/push_native_page_event.dart';
 import 'package:blade/navigator/pop_mixin.dart';
 import '../blade_navigator.dart';
 
-mixin BladeNavigatorMixin on BaseNavigator, popMixin implements BladeNavigator {
+mixin BladeNavigatorMixin on BaseNavigator, PopMixin implements BladeNavigator {
   /// Push native page onto the hybrid stack.
   Future<T?> pushNativePage<T extends Object>(String name,
       {Map<String, Object>? arguments}) async {
@@ -71,44 +71,5 @@ mixin BladeNavigatorMixin on BaseNavigator, popMixin implements BladeNavigator {
 
 
 
-// Route<dynamic>? _getCurrentPageRoute() {
-//   return topContainer.topPage.route;
-// }
-//
-// String _getCurrentPageUniqueId() {
-//   return topContainer.topPage.pageInfo.id;
-// }
-//
-// String? _getPreviousPageUniqueId() {
-//   assert(topContainer.pages != null);
-//   final int pageCount = topContainer.pages.length;
-//   if (pageCount > 1) {
-//     return topContainer.pages[pageCount - 2].pageInfo.id;
-//   } else {
-//     final int containerCount = containers.length;
-//     if (containerCount > 1) {
-//       return containers[containerCount - 2].pages.last.pageInfo.id;
-//     }
-//   }
-//
-//   return null;
-// }
-//
-// Route<dynamic>? _getPreviousPageRoute() {
-//   final int pageCount = topContainer.pages.length;
-//   if (pageCount > 1) {
-//     return topContainer.pages[pageCount - 2].route;
-//   } else {
-//     final int containerCount = containers.length;
-//     if (containerCount > 1) {
-//       return containers[containerCount - 2].pages.last.route;
-//     }
-//   }
-//
-//   return null;
-// }
 
-// PageInfo getTopPageInfo() {
-//   return topContainer.topPage.pageInfo;
-// }
 }

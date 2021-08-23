@@ -1,5 +1,8 @@
+import 'package:blade/container/blade_container_widget.dart';
 import 'package:flutter/widgets.dart';
 import 'package:blade/container/blade_container.dart';
+
+import 'blade_container.dart';
 
 final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
 List<ContainerOverlayEntry>? _lastEntries;
@@ -39,11 +42,13 @@ void refreshOverlayEntries(List<BladeContainer> containers) {
 class ContainerOverlayEntry extends OverlayEntry {
   ContainerOverlayEntry(BladeContainer container)
       : super(
-            builder: (BuildContext ctx) => container,
+            builder: (BuildContext ctx) => BladeContainerWidget(container: container),
             opaque: true,
             maintainState: true) {
 
-    container.attach(this);
+    container.entryRemovedCallback = (){
+      remove();
+    };
   }
   bool _removed = false;
 
