@@ -17,7 +17,7 @@ class FlutterPage extends StatefulWidget {
 }
 
 class _FlutterPageState extends State<FlutterPage>
-    with PageVisibilityObserver {
+    with PageLifecycleObserver {
 
   static const String _kTag = 'page_visibility';
 
@@ -30,37 +30,27 @@ class _FlutterPageState extends State<FlutterPage>
   @override
   void didChangeDependencies() {
     Logger.log('$_kTag#didChangeDependencies, ${widget.uniqueId}, $this');
-    PageVisibilityBinding.instance.addObserver(this, ModalRoute.of(context)!);
+    PageLifecycle.shared.addObserver(this, ModalRoute.of(context)!);
     super.didChangeDependencies();
   }
 
   @override
-  void dispose() {
-    PageVisibilityBinding.instance.removeObserver(this);
-    Logger.log('$_kTag#dispose~, ${widget.uniqueId}, $this');
-    super.dispose();
-  }
-
-  @override
-  void onPageCreate() {
-    Logger.log('$_kTag#onPageCreate, ${widget.uniqueId}, $this');
-  }
-
-  @override
-  void onPageDestory() {
-    Logger.log('$_kTag#onPageDestory, ${widget.uniqueId}, $this');
-  }
-
-  @override
-  void onPageShow({bool isForegroundEvent = true}) {
+  void onAppeared({bool isForegroundEvent = true}) {
     Logger.log(
         '$_kTag#onPageShow, ${widget.uniqueId}, isForegroundEvent=$isForegroundEvent, $this');
   }
 
   @override
-  void onPageHide({bool isBackgroundEvent = true}) {
+  void onDisappeared({bool isBackgroundEvent = true}) {
     Logger.log(
         '$_kTag#onPageHide, ${widget.uniqueId}, isBackgroundEvent=$isBackgroundEvent, $this');
+  }
+
+  @override
+  void dispose() {
+    PageLifecycle.shared.removeObserver(this);
+    Logger.log('$_kTag#dispose~, ${widget.uniqueId}, $this');
+    super.dispose();
   }
 
   @override
@@ -129,7 +119,7 @@ class _FlutterPageState extends State<FlutterPage>
                       style: TextStyle(fontSize: 22.0, color: Colors.black),
                     )),
                 onTap: () => BladeNavigator.of()
-                    .pushFlutterPage("firstFirst"),
+                    .pushFlutterPage("flutterPage", arguments: {'status': 101}),
               ),
 
               InkWell(

@@ -15,12 +15,12 @@ class SimpleWidget extends StatefulWidget {
 }
 
 class _SimpleWidgetState extends State<SimpleWidget>
-    with PageVisibilityObserver {
+    with PageLifecycleObserver {
   static const String _kTag = 'page_visibility';
   @override
   void didChangeDependencies() {
     final Route<dynamic> route = ModalRoute.of(context) as Route<dynamic>;
-    PageVisibilityBinding.instance.addObserver(this, route);
+    PageLifecycle.shared.addObserver(this, route);
     print('$_kTag#didChangeDependencies, ${widget.uniqueId}, $this');
     super.didChangeDependencies();
   }
@@ -32,30 +32,22 @@ class _SimpleWidgetState extends State<SimpleWidget>
   }
 
   @override
-  void dispose() {
-    PageVisibilityBinding.instance.removeObserver(this);
-    print('$_kTag#dispose, ${widget.uniqueId}, $this');
-    super.dispose();
-  }
-
-  @override
-  void onPageCreate() {
-    print('$_kTag#onPageCreate, ${widget.uniqueId}, $this');
-  }
-
-  @override
-  void onPageDestory() {
-    print('$_kTag#onPageDestory, ${widget.uniqueId}, $this');
-  }
-
-  @override
-  void onPageShow({bool isForegroundEvent = true}) {
+  void onAppeared({bool isForegroundEvent = true}) {
     print('$_kTag#onPageShow, ${widget.uniqueId}, isForegroundEvent=$isForegroundEvent, $this');
   }
 
   @override
-  void onPageHide({bool isBackgroundEvent = true}) {
+  void onDisappeared({bool isBackgroundEvent = true}) {
     print('$_kTag#onPageHide, ${widget.uniqueId}, isBackgroundEvent=$isBackgroundEvent, $this');
+  }
+
+
+
+  @override
+  void dispose() {
+    PageLifecycle.shared.removeObserver(this);
+    print('$_kTag#dispose, ${widget.uniqueId}, $this');
+    super.dispose();
   }
 
   @override

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:blade/container/blade_container.dart';
-import 'package:blade/container/page_visibility.dart';
 import 'package:blade/container/overlay_entry.dart';
 import 'container/blade_page.dart';
 import 'navigator/hybrid_navigator.dart';
@@ -33,7 +32,6 @@ class BladeApp extends StatefulWidget {
 class BladeAppState extends State<BladeApp>   {
   late HybridNavigator hybridNavigator;
   final Set<int> _activePointers = <int>{};
-
 
   @override
   void initState() {
@@ -86,52 +84,6 @@ class BladeAppState extends State<BladeApp>   {
     final instance = WidgetsBinding.instance;
     if (instance != null) {
       _activePointers.toList().forEach(instance.cancelPointer);
-    }
-  }
-}
-
-class BladeNavigatorObserver extends NavigatorObserver {
-  List<BladePage<dynamic>> _pageList;
-  String _uniqueId;
-
-  BladeNavigatorObserver(this._pageList, this._uniqueId);
-
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    //handle internal route
-    PageVisibilityBinding.instance.dispatchPageShowEvent(route);
-    PageVisibilityBinding.instance.dispatchPageHideEvent(previousRoute);
-    super.didPush(route, previousRoute);
-    _disablePanGesture();
-  }
-
-  @override
-  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    if (previousRoute != null) {
-      PageVisibilityBinding.instance.dispatchPageHideEvent(route);
-      PageVisibilityBinding.instance.dispatchPageShowEvent(previousRoute);
-    }
-    super.didPop(route, previousRoute);
-    _enablePanGesture();
-  }
-
-  bool canDisable = true;
-
-  void _disablePanGesture() {
-    if (Platform.isIOS) {
-      if (_pageList.length > 1 && canDisable) {
-        // BladeNavigator.of().enablePanGesture(_uniqueId, false);
-        canDisable = false;
-      }
-    }
-  }
-
-  void _enablePanGesture() {
-    if (Platform.isIOS) {
-      if (_pageList.length == 1) {
-        // BladeNavigator.of().enablePanGesture(_uniqueId, true);
-        canDisable = true;
-      }
     }
   }
 }

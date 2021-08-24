@@ -11,8 +11,18 @@ class BladeContainer extends ChangeNotifier {
   final PageInfo pageInfo;
   final List<BladePage<dynamic>> _pages = <BladePage<dynamic>>[];
 
+  final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+
   List<BladePage<dynamic>> get pages {
-    return _pages;
+    return List.unmodifiable(_pages);
+  }
+
+  Route<dynamic>? get topRoute {
+    if (_pages.length > 0) {
+      return _pages.last.route;
+    } else {
+      return null;
+    }
   }
 
   BladeContainer(this.routeFactory, this.pageInfo) {
@@ -66,8 +76,6 @@ class BladeContainer extends ChangeNotifier {
     //   }
     // }
   }
-
-
 
   BladePage? getPageById(String id) {
     try {

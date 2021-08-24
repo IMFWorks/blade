@@ -68,8 +68,4 @@ mixin BladeNavigatorMixin on BaseNavigator, PopMixin implements BladeNavigator {
 //   nativeRouterApi.enablePanGesture(params);
 // }
 
-
-
-
-
 }

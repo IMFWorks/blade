@@ -81,12 +81,12 @@ class EventDispatcher {
       return ok;
     };
 
-    _eventHandlers["onForeground"] = (dynamic arguments) async {
+    _eventHandlers["foreground"] = (dynamic arguments) async {
       _pageEventListener?.onForeground();
       return ok;
     };
 
-    _eventHandlers["onBackground"] = (dynamic arguments) async {
+    _eventHandlers["background"] = (dynamic arguments) async {
       _pageEventListener?.onBackground();
       return ok;
     };
