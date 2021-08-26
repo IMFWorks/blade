@@ -1,10 +1,12 @@
+import 'dart:io';
+
+import 'package:blade/container/blade_container.dart';
 import 'package:blade/container/page_lifecycle.dart';
 import 'package:blade/messenger/event_dispatcher.dart';
 import 'package:blade/messenger/page_info.dart';
 import 'package:blade/navigator/base_navigator.dart';
 import 'package:blade/navigator/pop_mixin.dart';
 import 'package:blade/navigator/push_mixin.dart';
-import 'package:flutter/cupertino.dart';
 
 mixin PlatformEventHandler on BaseNavigator, PushMixin, PopMixin implements PageEventListener {
 
@@ -24,41 +26,40 @@ mixin PlatformEventHandler on BaseNavigator, PushMixin, PopMixin implements Page
   }
 
   void removePage(PageInfo pageInfo) {
-    remove(pageInfo);
+    removeContainer(pageInfo);
   }
 
   void onPageAppeared(PageInfo pageInfo) {
-    print('onPageAppeared');
     final container = containerManager.getContainerById(pageInfo.id);
     if (container != null) {
-      final topRoute = container.topRoute;
-      if (topRoute == null) {
-        // 第一次页面还没初始化注册observer
-        WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-          final topRoute = container.topRoute;
-          if (topRoute != null) {
-            PageLifecycle.shared.dispatchAppearedEvent(topRoute);
-          }
-        });
-      } else {
-        PageLifecycle.shared.dispatchAppearedEvent(topRoute);
+      final route = container.getPageById(pageInfo.id)?.route;
+      if (route != null) {
+        PageLifecycle.shared.dispatchAppearedEvent(route);
       }
     }
   }
 
-  // todo-wrs 逻辑目前不正确
   void onPageDisappeared(PageInfo pageInfo) {
-    // if (topContainer.pageInfo.id != pageInfo.id) {
-    //   return;
-    // }
-
-    final id = topContainer.pageInfo.id;
-    final container = containerManager.getContainerById(id);
+    final container = containerManager.getContainerById(pageInfo.id);
     if (container != null) {
-      final topRoute = container.topRoute;
-      if (topRoute != null) {
-        PageLifecycle.shared.dispatchDisappearedEvent(topRoute);
+      dispatchDisappearedEvent(container);
+    } else {
+      // 因pop导致的Disappeared
+      final container = getPendingPopContainer(pageInfo.id);
+      if (container != null) {
+        dispatchDisappearedEvent(container);
       }
+
+      if (Platform.isAndroid) {
+        removePendingContainerById(pageInfo.id);
+      }
+    }
+  }
+
+  void dispatchDisappearedEvent(BladeContainer container) {
+    final topRoute = container.topRoute;
+    if (topRoute != null) {
+      PageLifecycle.shared.dispatchDisappearedEvent(topRoute);
     }
   }
 

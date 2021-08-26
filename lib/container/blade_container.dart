@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:blade/messenger/page_info.dart';
 import 'package:flutter/cupertino.dart';
-
 import '../logger.dart';
 import 'blade_page.dart';
 
@@ -15,6 +14,13 @@ class BladeContainer extends ChangeNotifier {
 
   List<BladePage<dynamic>> get pages {
     return List.unmodifiable(_pages);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    entryRemoved();
   }
 
   Route<dynamic>? get topRoute {
@@ -64,6 +70,8 @@ class BladeContainer extends ChangeNotifier {
     if (tempEntryRemovedCallback != null) {
       tempEntryRemovedCallback();
     }
+
+    entryRemovedCallback = null;
 
     // Ensure this frame is refreshed after schedule frame，otherwise the PageState.dispose may not be called
     // final instance = SchedulerBinding.instance;

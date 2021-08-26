@@ -1,16 +1,15 @@
 import 'package:blade/blade_navigator.dart';
 import 'package:blade/logger.dart';
-import 'package:blade/container/page_visibility.dart';
+import 'package:blade/container/page_lifecycle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ReturnResultPage extends StatefulWidget {
   const ReturnResultPage({required this.params,
-    this.message, required this.uniqueId});
+    this.message});
 
   final Map params;
   final String? message;
-  final String uniqueId;
 
   @override
   _ReturnResultPageState createState() => _ReturnResultPageState();
@@ -19,37 +18,38 @@ class ReturnResultPage extends StatefulWidget {
 class _ReturnResultPageState extends State<ReturnResultPage>
     with PageLifecycleObserver {
 
-  static const String _kTag = 'page_visibility';
+  static const String _kTag = 'ReturnResultPage';
 
   @override
   void initState() {
     super.initState();
-    Logger.log('$_kTag#initState, ${widget.uniqueId}, $this');
+
+    Logger.log('$_kTag#initState, $this');
   }
 
   @override
   void didChangeDependencies() {
-    Logger.log('$_kTag#didChangeDependencies, ${widget.uniqueId}, $this');
+    Logger.log('$_kTag#didChangeDependencies, $this');
     PageLifecycle.shared.addObserver(this, ModalRoute.of(context)!);
     super.didChangeDependencies();
   }
 
   @override
-  void onAppeared({bool isForegroundEvent = true}) {
+  void onAppeared() {
     Logger.log(
-        '$_kTag#onPageShow, ${widget.uniqueId}, isForegroundEvent=$isForegroundEvent, $this');
+        '$_kTag#onAppeared, $this');
   }
 
   @override
-  void onDisappeared({bool isBackgroundEvent = true}) {
+  void onDisappeared() {
     Logger.log(
-        '$_kTag#onPageHide, ${widget.uniqueId}, isBackgroundEvent=$isBackgroundEvent, $this');
+        '$_kTag#onDisappeared, $this');
   }
 
   @override
   void dispose() {
     PageLifecycle.shared.removeObserver(this);
-    Logger.log('$_kTag#dispose~, ${widget.uniqueId}, $this');
+    Logger.log('$_kTag#dispose(), $this');
     super.dispose();
   }
 

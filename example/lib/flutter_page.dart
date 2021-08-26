@@ -1,16 +1,15 @@
 import 'package:blade/blade_navigator.dart';
 import 'package:blade/logger.dart';
-import 'package:blade/container/page_visibility.dart';
+import 'package:blade/container/page_lifecycle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FlutterPage extends StatefulWidget {
   const FlutterPage({required this.params,
-    this.message, required this.uniqueId});
+    this.message});
 
   final Map params;
   final String? message;
-  final String uniqueId;
 
   @override
   _FlutterPageState createState() => _FlutterPageState();
@@ -19,37 +18,37 @@ class FlutterPage extends StatefulWidget {
 class _FlutterPageState extends State<FlutterPage>
     with PageLifecycleObserver {
 
-  static const String _kTag = 'page_visibility';
+  static const String _kTag = 'FlutterPage';
 
   @override
   void initState() {
     super.initState();
-    Logger.log('$_kTag#initState, ${widget.uniqueId}, $this');
+    Logger.log('$_kTag#initState(), $this');
   }
 
   @override
   void didChangeDependencies() {
-    Logger.log('$_kTag#didChangeDependencies, ${widget.uniqueId}, $this');
+    Logger.log('$_kTag#didChangeDependencies(), $this');
     PageLifecycle.shared.addObserver(this, ModalRoute.of(context)!);
     super.didChangeDependencies();
   }
 
   @override
-  void onAppeared({bool isForegroundEvent = true}) {
+  void onAppeared() {
     Logger.log(
-        '$_kTag#onPageShow, ${widget.uniqueId}, isForegroundEvent=$isForegroundEvent, $this');
+        '$_kTag#onAppeared(), $this');
   }
 
   @override
-  void onDisappeared({bool isBackgroundEvent = true}) {
+  void onDisappeared() {
     Logger.log(
-        '$_kTag#onPageHide, ${widget.uniqueId}, isBackgroundEvent=$isBackgroundEvent, $this');
+        '$_kTag#onDisappeared(), $this');
   }
 
   @override
   void dispose() {
     PageLifecycle.shared.removeObserver(this);
-    Logger.log('$_kTag#dispose~, ${widget.uniqueId}, $this');
+    Logger.log('$_kTag#dispose(), $this');
     super.dispose();
   }
 
@@ -86,7 +85,7 @@ class _FlutterPageState extends State<FlutterPage>
                 child: Text.rich(TextSpan(text: '', children: <TextSpan>[
                   TextSpan(
                       text: message ??
-                          "This is a flutter activity.\nuniqueId:${widget.uniqueId}",
+                          "This is a flutter activity.",
                       style: TextStyle(color: Colors.blue)),
                   TextSpan(
                       text: "\nparams: ${widget.params}",

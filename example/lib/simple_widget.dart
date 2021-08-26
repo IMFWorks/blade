@@ -1,4 +1,4 @@
-import 'package:blade/container/page_visibility.dart';
+import 'package:blade/container/page_lifecycle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:blade/blade_navigator.dart';

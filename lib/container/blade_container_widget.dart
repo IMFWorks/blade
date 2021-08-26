@@ -78,7 +78,10 @@ class BladeNavigatorObserver extends NavigatorObserver {
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    PageLifecycle.shared.dispatchAppearedEvent(route);
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+        PageLifecycle.shared.dispatchAppearedEvent(route);
+    });
+
     if (previousRoute != null) {
       PageLifecycle.shared.dispatchDisappearedEvent(previousRoute);
     }
@@ -90,6 +93,7 @@ class BladeNavigatorObserver extends NavigatorObserver {
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     PageLifecycle.shared.dispatchDisappearedEvent(route);
+
     if (previousRoute != null) {
       PageLifecycle.shared.dispatchAppearedEvent(previousRoute);
     }

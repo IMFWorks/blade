@@ -66,10 +66,4 @@ class ContainerManager {
 
     return container;
   }
-
-  // void detachContainer(BladeContainer container) {
-  //   Route<dynamic>? route = container.pages.first.route;
-  //   //PageVisibilityBinding.instance.dispatchPageDestoryEvent(route);
-  //   container.detach();
-  // }
 }

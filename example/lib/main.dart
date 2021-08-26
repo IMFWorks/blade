@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     ///可以在native层通过 getContainerParams 来传递参数
     'flutterPage': (context, settings) {
       return FlutterPage(
-          params: settings.arguments as Map<String, dynamic>, uniqueId: "");
+          params: settings.arguments as Map<String, dynamic>);
     },
     'tab_friend': (context, settings) {
       return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
@@ -74,8 +74,7 @@ class _MyAppState extends State<MyApp> {
     },
 
     'returnResult': (context, settings) {
-      return ReturnResultPage(params: settings.arguments as Map<dynamic, dynamic>,
-          uniqueId: "");
+      return ReturnResultPage(params: settings.arguments as Map<dynamic, dynamic>);
     },
   };
 
