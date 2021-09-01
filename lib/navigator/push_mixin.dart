@@ -11,18 +11,11 @@ mixin PushMixin on BaseNavigator {
     final BladeContainer? container = containerManager.getContainerById(id);
     if (container != null) {
       if (topContainer != container) {
-        // PageVisibilityBinding.instance
-        //     .dispatchPageHideEvent(_getCurrentPageRoute());
-
         containerManager.removeContainer(container);
         container.entryRemoved();
         containerManager.addContainer(container);
         insertEntry(container);
-        // PageVisibilityBinding.instance
-        //     .dispatchPageShowEvent(container.topPage.route);
       } else {
-        // PageVisibilityBinding.instance
-        //     .dispatchPageShowEvent(_getCurrentPageRoute());
       }
     } else {
       final container = containerManager.createContainer(pageInfo);
@@ -33,7 +26,6 @@ mixin PushMixin on BaseNavigator {
     Logger.log('push page,'
         ' id=$id, '
         'existed=$container,'
-        ' withContainer=$pageInfo.withContainer, '
         'arguments:$pageInfo.arguments');
   }
 }

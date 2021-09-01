@@ -21,11 +21,11 @@ class BladePage<T> extends Page<T> {
         key: UniqueKey(), pageInfo: pageInfo, routeFactory: routeFactory);
   }
 
-  Route<T>? _route;
-  Route<T>? get route => _route;
+  late Route<T> _route;
+  Route<T> get route => _route;
 
   /// A future that completes when this page is popped.
-  Future<T> get popped => _popCompleter.future;
+  Future<T?> get popped => _popCompleter.future;
   final Completer<T> _popCompleter = Completer<T>();
 
   void didComplete(T? result) {

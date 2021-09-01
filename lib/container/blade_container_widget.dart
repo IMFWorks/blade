@@ -10,8 +10,7 @@ import 'package:flutter/widgets.dart';
 class BladeContainerWidget extends StatefulWidget {
   BladeContainerWidget(
       {LocalKey? key,required this.container})
-      : super(key: key) {
-  }
+      : super(key: key);
 
   final BladeContainer container;
 
@@ -21,7 +20,7 @@ class BladeContainerWidget extends StatefulWidget {
 
 class BladeContainerWidgetState extends State<BladeContainerWidget> {
 
-  void _updatePagesList(BladePage page, dynamic result) {
+  void _popPage(BladePage page, dynamic result) {
     widget.container.popPage(page, result);
   }
 
@@ -51,7 +50,7 @@ class BladeContainerWidgetState extends State<BladeContainerWidget> {
       pages: List<Page<dynamic>>.of(widget.container.pages),
       onPopPage: (Route<dynamic> route, dynamic result) {
         if (route.didPop(result)) {
-          _updatePagesList(route as BladePage, result);
+          _popPage(route.settings as BladePage, result);
           return true;
         }
 

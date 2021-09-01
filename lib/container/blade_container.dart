@@ -46,17 +46,13 @@ class BladeContainer extends ChangeNotifier {
     return page.popped;
   }
 
-  void pop<T extends Object?>([T? result ])  {
-    if (_pages.length > 0) {
-      final poppedPage = _pages.last;
-      popPage(poppedPage,result);
-    }
+  void pop<T extends Object?>([T? result ]) {
+    navKey.currentState?.maybePop(result);
   }
 
   void popPage<T extends Object?>(BladePage<T> page, [T? result ])  {
     _pages.remove(page);
     page.didComplete(result);
-    notifyListeners();
   }
 
   void popUntil(String pageName) {
