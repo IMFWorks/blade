@@ -20,8 +20,8 @@ mixin BladeNavigatorMixin on BaseNavigator, PopMixin implements BladeNavigator {
       {Map<String, Object>? arguments}) async {
     String id = createPageId(name);
     final pageInfo = PageInfo(name: name, id: id, arguments:  arguments);
-    final event = PushFlutterPageEvent(pageInfo);
-    return eventDispatcher.sendNativeEvent(event);
+    final pushFlutterPageEvent = PushFlutterPageEvent(pageInfo);
+    return eventDispatcher.sendNativeEvent(pushFlutterPageEvent);
   }
 
   Future<T?> pushFlutterPage<T>(String name,
@@ -32,6 +32,32 @@ mixin BladeNavigatorMixin on BaseNavigator, PopMixin implements BladeNavigator {
     return topContainer.push(page);
   }
 
+//
+// Future<bool> popUntil(String uniqueId,
+//     {Map<dynamic, dynamic>? arguments}) async {
+//   final BladeContainer? container = _findContainerByUniqueId(uniqueId);
+//   if (container == null) {
+//     Logger.error('uniqueId=$uniqueId not find');
+//     return false;
+//   }
+//   final BladePage? page = _findPageByUniqueId(uniqueId, container);
+//   if (page == null) {
+//     Logger.error('uniqueId=$uniqueId page not find');
+//     return false;
+//   }
+//
+//   if (container != topContainer) {
+//     final CommonParams params = CommonParams()
+//       ..pageName = container.pageInfo.name
+//       ..uniqueId = container.pageInfo.id
+//       ..arguments = container.pageInfo.arguments;
+//     await _nativeRouterApi.popUtilRouter(params);
+//   }
+//   container.popUntil(page.pageInfo.name);
+//   Logger.log(
+//       'pop container, uniqueId=$uniqueId, arguments:$arguments, $container');
+//   return true;
+// }
 //
 
 

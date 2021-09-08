@@ -117,11 +117,9 @@ class _FlutterPageState extends State<FlutterPage>
                       'open flutterPage',
                       style: TextStyle(fontSize: 22.0, color: Colors.black),
                     )),
-                onTap: () async {
-                  final result = await BladeNavigator.of()
-                      .pushFlutterPageOnNative("flutterPage", arguments: {'status': 101});
-                  print('Get result: $result');
-                }),
+                onTap: () => BladeNavigator.of()
+                    .pushFlutterPage("flutterPage", arguments: {'status': 101}),
+              ),
 
               InkWell(
                   child: Container(
@@ -158,6 +156,11 @@ class _FlutterPageState extends State<FlutterPage>
                         'returning result from flutter page',
                         style: TextStyle(fontSize: 22.0, color: Colors.black),
                       )),
+                  // onTap: () async {
+                  //   final result = await BoostNavigator.of()
+                  //       .push("returnData", withContainer: true);
+                  //   print('Get result: $result');
+                  // }),
                   onTap: () => BladeNavigator.of()
                       .pushFlutterPage("returnResult", arguments: {'param1': '100'})
                       .then((onValue) => print('Get result: $onValue'))),

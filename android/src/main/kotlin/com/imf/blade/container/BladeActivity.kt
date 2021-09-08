@@ -115,9 +115,7 @@ open class BladeActivity : FlutterActivity(), FlutterViewContainer {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK) {
-            val extras = data?.extras?.toMap()
-            val result = extras?.get(LaunchConfigs.ACTIVITY_RESULT_KEY) as HashMap<String,Any>?
-            activityResultListener?.success(result)
+            activityResultListener?.success(data?.extras?.toMap())
         } else {
             activityResultListener?.cancel()
         }
