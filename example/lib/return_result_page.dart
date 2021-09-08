@@ -60,7 +60,7 @@ class _ReturnResultPageState extends State<ReturnResultPage>
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.dark,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.blue,
         textTheme: new TextTheme(title: TextStyle(color: Colors.black)),
         leading: Builder(builder: (BuildContext context) {
           return IconButton(
@@ -75,10 +75,39 @@ class _ReturnResultPageState extends State<ReturnResultPage>
         }),
         title: Text('return_result_example'),
       ),
-      body: Container(
-        height: 1000,
-        margin: const EdgeInsets.all(24.0),
-        child: Text(response.toString()),
+      body: Column(
+        children: [
+          Container(
+        margin: const EdgeInsets.all(100.0),
+        child: Text('result: ' + response.toString())),
+
+          InkWell(
+            child: Container(
+                padding: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.all(8.0),
+                color: Colors.yellow,
+                child: Text(
+                  'pop',
+                  style: TextStyle(fontSize: 22.0, color: Colors.black),
+                )),
+            onTap: ()  async {
+               BladeNavigator.of().pop(result: response);
+            },
+          ),
+
+          InkWell(
+            child: Container(
+                padding: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.all(8.0),
+                color: Colors.yellow,
+                child: Text(
+                  'popUntil',
+                  style: TextStyle(fontSize: 22.0, color: Colors.black),
+                )),
+            onTap: ()  async {
+              BladeNavigator.of().popUtil("flutterPage", response);
+            },
+          )]
       )
     );
   }

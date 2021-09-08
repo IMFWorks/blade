@@ -7,19 +7,25 @@ import 'blade_page.dart';
 
 class BladeContainer extends ChangeNotifier {
   final BladeRouteFactory routeFactory;
-  final PageInfo pageInfo;
   final List<BladePage<dynamic>> _pages = <BladePage<dynamic>>[];
-
-  final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
-
   List<BladePage<dynamic>> get pages {
-    return List.unmodifiable(_pages);
+    return _pages;
+  }
+
+  PageInfo get pageInfo {
+    return _pages.first.pageInfo;
+  }
+
+  final navKey = GlobalKey<NavigatorState>();
+
+  BladeContainer(this.routeFactory, PageInfo pageInfo) {
+    final initialPage = BladePage(routeFactory: routeFactory, pageInfo: pageInfo);
+    _pages.add(initialPage);
   }
 
   @override
   void dispose() {
     super.dispose();
-
     entryRemoved();
   }
 
@@ -29,11 +35,6 @@ class BladeContainer extends ChangeNotifier {
     } else {
       return null;
     }
-  }
-
-  BladeContainer(this.routeFactory, this.pageInfo) {
-    final initialPage = BladePage(routeFactory: routeFactory, pageInfo: pageInfo);
-    _pages.add(initialPage);
   }
 
   bool canPop() {
@@ -53,10 +54,15 @@ class BladeContainer extends ChangeNotifier {
   void popPage<T extends Object?>(BladePage<T> page, [T? result ])  {
     _pages.remove(page);
     page.didComplete(result);
+    // notifyListeners();
   }
 
-  void popUntil(String pageName) {
-     //
+  void popUntil<T extends Object>(String name, [T? result]) {
+    final page = getLatestPageByName(name);
+    if (page != null) {
+      navKey.currentState?.popUntil((route) => route.settings as BladePage == page);
+      page.didComplete(result);
+    }
   }
 
   VoidCallback? entryRemovedCallback;
@@ -81,9 +87,19 @@ class BladeContainer extends ChangeNotifier {
     // }
   }
 
-  BladePage? getPageById(String id) {
+  BladePage? getLatestPageById(String id) {
     try {
-      return _pages.singleWhere((BladePage element) => element.pageInfo.id == id);
+      return _pages.reversed.firstWhere((BladePage element) => element.pageInfo.id == id);
+    } catch (e) {
+      Logger.logObject(e);
+    }
+
+    return null;
+  }
+
+  BladePage? getLatestPageByName(String name) {
+    try {
+      return _pages.reversed.firstWhere((BladePage element) => element.pageInfo.name == name);
     } catch (e) {
       Logger.logObject(e);
     }
