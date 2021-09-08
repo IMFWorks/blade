@@ -28,7 +28,8 @@ abstract class BladeNavigator {
   Future<T?> pushFlutterPage<T>(String name,
       {Map<String, Object>? arguments});
 
-  void pop<T>({T? result});
+  void pop<T>({String? id, T? result});
 
-  void popUtil<T extends Object>(String name, [T? result]);
+  Future<void> popUtil<T extends Object>(String id, [T? result]);
 }
+

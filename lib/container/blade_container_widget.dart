@@ -45,19 +45,19 @@ class BladeContainerWidgetState extends State<BladeContainerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // final pages = widget.container.pages;
+    final pages = List.of(widget.container.pages);
+
     return Navigator(
       key: widget.container.navKey,
-      pages: List<Page<dynamic>>.of(widget.container.pages),
+      pages: pages,
       onPopPage: (Route<dynamic> route, dynamic result) {
-        if (route.didPop(result)) {
-          _popPage(route.settings as BladePage, result);
-          return true;
-        }
-
-        return false;
+        _popPage(route.settings as BladePage, result);
+        route.didPop(result);
+        return true;
       },
       observers: <NavigatorObserver>[
-        BladeNavigatorObserver(widget.container.pages, widget.container.pageInfo.id),
+        BladeNavigatorObserver(widget.container.pages)
       ],
     );
   }
@@ -70,10 +70,9 @@ class BladeContainerWidgetState extends State<BladeContainerWidget> {
 }
 
 class BladeNavigatorObserver extends NavigatorObserver {
-  List<BladePage<dynamic>> _pageList;
-  String _uniqueId;
+  List<BladePage<dynamic>> _pages;
 
-  BladeNavigatorObserver(this._pageList, this._uniqueId);
+  BladeNavigatorObserver(this._pages);
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
@@ -104,7 +103,7 @@ class BladeNavigatorObserver extends NavigatorObserver {
 
   void _disablePanGesture() {
     if (Platform.isIOS) {
-      if (_pageList.length > 1 && canDisable) {
+      if (_pages.length > 1 && canDisable) {
         // BladeNavigator.of().enablePanGesture(_uniqueId, false);
         canDisable = false;
       }
@@ -113,7 +112,7 @@ class BladeNavigatorObserver extends NavigatorObserver {
 
   void _enablePanGesture() {
     if (Platform.isIOS) {
-      if (_pageList.length == 1) {
+      if (_pages.length == 1) {
         // BladeNavigator.of().enablePanGesture(_uniqueId, true);
         canDisable = true;
       }

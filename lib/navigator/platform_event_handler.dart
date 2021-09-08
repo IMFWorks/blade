@@ -22,7 +22,7 @@ mixin PlatformEventHandler on BaseNavigator, PushMixin, PopMixin implements Page
   }
 
   void popPage(PageInfo pageInfo) {
-    pop(id: pageInfo.id);
+    pop();
   }
 
   void removePage(PageInfo pageInfo) {
@@ -32,7 +32,7 @@ mixin PlatformEventHandler on BaseNavigator, PushMixin, PopMixin implements Page
   void onPageAppeared(PageInfo pageInfo) {
     final container = containerManager.getContainerById(pageInfo.id);
     if (container != null) {
-      final route = container.getPageById(pageInfo.id)?.route;
+      final route = container.getLatestPageById(pageInfo.id)?.route;
       if (route != null) {
         PageLifecycle.shared.dispatchAppearedEvent(route);
       }

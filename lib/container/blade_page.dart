@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../messenger/page_info.dart';
 
 typedef BladeRouteFactory = Route<dynamic> Function(
-    RouteSettings settings, String uniqueId);
+    RouteSettings settings, String id);
 
 class BladePage<T> extends Page<T> {
   BladePage({LocalKey? key, required this.routeFactory, required this.pageInfo})
