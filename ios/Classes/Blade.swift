@@ -20,6 +20,7 @@ public class Blade {
         }
         self.plugin = SwiftBladePlugin.getPlugin(engine: engine)
         self.plugin?.delegate = delegate
+        self.registerNotification()
     }
     
     var delegate:BladeDelegate? {
