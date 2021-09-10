@@ -178,7 +178,7 @@ open class BladeActivity : FlutterActivity(), FlutterViewContainer {
         }
 
     override fun getCachedEngineId(): String {
-        return Blade.ENGINE_ID;
+        return Blade.ENGINE_ID
     }
 
     companion object {

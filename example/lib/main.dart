@@ -56,6 +56,10 @@ class _MyAppState extends State<MyApp> {
       return FlutterPage(
           params: settings.arguments as Map<String, dynamic>);
     },
+    'flutterPageA': (context, settings) {
+      return FlutterPage(
+          params: settings.arguments as Map<String, dynamic>);
+    },
     'tab_friend': (context, settings) {
       return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
           "This is a flutter fragment");

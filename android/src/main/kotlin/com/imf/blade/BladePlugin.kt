@@ -3,13 +3,8 @@ package com.imf.blade
 import androidx.annotation.NonNull
 import com.imf.blade.container.events.BackgroundEvent
 import com.imf.blade.container.events.ForegroundEvent
-import com.imf.blade.container.nativeEvents.NativeEventListener
-import com.imf.blade.container.nativeEvents.PushFlutterPageEvent
-import com.imf.blade.container.nativeEvents.PushNativePageEvent
+import com.imf.blade.container.nativeEvents.*
 import com.imf.blade.messager.FlutterChannel
-import com.imf.blade.messager.FlutterEventResponse
-import com.imf.blade.messager.FlutterEventResponseListener
-import com.imf.blade.messager.ok
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 
@@ -30,7 +25,7 @@ class BladePlugin: FlutterPlugin, NativeEventListener {
     platformCoordinator.release()
   }
 
-  var delegate: BladeDelegate? = null
+  var delegate: NativeEventListener? = null
 
   override fun pushFlutterPage(event: PushFlutterPageEvent) {
     delegate?.pushFlutterPage(event)
@@ -38,6 +33,14 @@ class BladePlugin: FlutterPlugin, NativeEventListener {
 
   override fun pushNativePage(event: PushNativePageEvent) {
     delegate?.pushNativePage(event)
+  }
+
+  override fun popNativePage(event: PopNativePageEvent) {
+    delegate?.popNativePage(event)
+  }
+
+  override fun popUntilNativePage(event: PopUntilNativePageEvent) {
+    delegate?.popUntilNativePage(event)
   }
 
   fun handleForegroundEvent() {

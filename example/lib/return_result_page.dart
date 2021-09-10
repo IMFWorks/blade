@@ -105,7 +105,7 @@ class _ReturnResultPageState extends State<ReturnResultPage>
                   style: TextStyle(fontSize: 22.0, color: Colors.black),
                 )),
             onTap: ()  async {
-              BladeNavigator.of().popUtil("flutterPage", response);
+              BladeNavigator.of().popUtil("flutterPage");
             },
           )]
       )

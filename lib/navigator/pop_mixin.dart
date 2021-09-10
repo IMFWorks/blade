@@ -1,6 +1,7 @@
 import 'package:blade/container/blade_container.dart';
 import 'package:blade/container/blade_page.dart';
 import 'package:blade/messenger/nativeEvents/pop_native_page_event.dart';
+import 'package:blade/messenger/nativeEvents/pop_until_native_page_event.dart';
 import 'package:blade/messenger/page_info.dart';
 import 'package:blade/navigator/base_navigator.dart';
 import '../logger.dart';
@@ -19,16 +20,21 @@ mixin PopMixin on BaseNavigator {
     Logger.log('pop , $container');
   }
 
-  void popUtil<T extends Object>(String name, [T? result]) async {
+  void popUtil<T extends Object>(String name) async {
     final container = containerManager.getContainerByName(name);
     if(container != null) {
       if (container == topContainer) {
         if (container.pageInfo.name == name) {
-          _popContainer(container, result as Map<String, dynamic>?);
+          _popContainer(container, null);
         } else {
           container.popUntil(name);
         }
       } else {
+        final pageInfo = PageInfo(name: name,
+            id: "",
+            arguments: null);
+        final event = PopUntilNativePageEvent(pageInfo);
+        eventDispatcher.sendNativeEvent(event);
       }
     } else {
       Logger.error("popUtil id not found");

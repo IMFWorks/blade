@@ -3,12 +3,11 @@ package com.imf.blade.container
 import com.imf.blade.BladePlugin
 import com.imf.blade.container.events.*
 import com.imf.blade.messager.FlutterEvent
-import com.imf.blade.messager.FlutterEventResponse
-import com.imf.blade.messager.FlutterEventResponseListener
 import com.imf.blade.messager.PageInfo
 
 class ContainerLifecycleListener(val container: FlutterViewContainer, private val plugin: BladePlugin) {
     private val pageInfo = PageInfo(container.url, container.id, container.urlParams)
+
 
     fun handlePushed() {
         plugin.flutterContainerManager.addContainer(container)

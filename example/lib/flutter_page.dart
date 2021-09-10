@@ -114,12 +114,12 @@ class _FlutterPageState extends State<FlutterPage>
                     margin: const EdgeInsets.all(8.0),
                     color: Colors.yellow,
                     child: Text(
-                      'open flutterPage',
+                      'open flutterPageA',
                       style: TextStyle(fontSize: 22.0, color: Colors.black),
                     )),
                 onTap: () async {
                   final result = await BladeNavigator.of()
-                      .pushFlutterPageOnNative("flutterPage", arguments: {'status': 101});
+                      .pushFlutterPageOnNative("flutterPageA", arguments: {'status': 101});
                   print('Get result: $result');
                 }),
 

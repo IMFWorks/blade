@@ -1,10 +1,6 @@
 package com.imf.blade
 
-import com.imf.blade.container.nativeEvents.NativeEventListener
-import com.imf.blade.container.nativeEvents.PopNativePageEvent
-import com.imf.blade.container.nativeEvents.PushFlutterPageEvent
-import com.imf.blade.container.nativeEvents.PushNativePageEvent
-import com.imf.blade.messager.Status
+import com.imf.blade.container.nativeEvents.*
 import com.imf.blade.messager.fatalError
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
@@ -32,15 +28,6 @@ class PlatformCoordinator(messenger: BinaryMessenger,
     }
 
     private fun setupHandlers() {
-        handlers["popNativePage"] = {call, result ->
-            if (call.arguments is String) {
-                val event = PopNativePageEvent.decode(call.arguments as String, result)
-                flutterContainerManager.handlePopNativePageEvent(event)
-            } else {
-                result.fatalError()
-            }
-        }
-
         handlers["pushNativePage"] = {call, result ->
             if (call.arguments is String) {
                 val event = PushNativePageEvent.decode(call.arguments as String, result)
@@ -54,6 +41,24 @@ class PlatformCoordinator(messenger: BinaryMessenger,
             if (call.arguments is String) {
                 val event = PushFlutterPageEvent.decode(call.arguments as String, result)
                 pushFlutterPage(event)
+            } else {
+                result.fatalError()
+            }
+        }
+
+        handlers["popNativePage"] = {call, result ->
+            if (call.arguments is String) {
+                val event = PopNativePageEvent.decode(call.arguments as String, result)
+                popNativePage(event)
+            } else {
+                result.fatalError()
+            }
+        }
+
+        handlers["popUntilNativePage"] = {call, result ->
+            if (call.arguments is String) {
+                val event = PopUntilNativePageEvent.decode(call.arguments as String, result)
+                popUntilNativePage(event)
             } else {
                 result.fatalError()
             }
