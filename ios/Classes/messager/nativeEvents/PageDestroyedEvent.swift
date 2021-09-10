@@ -6,9 +6,10 @@
 //
 
 import Foundation
-public class PageDestroyedEvent:NativeBaseEvent {
+public struct PageDestroyedEvent:NativeBaseEvent {
+    var methodName: String
+    var pageInfo: PageInfo?
     init(_ pageInfo:PageInfo?) {
-        super.init()
         self.methodName = "pageDestroyed"
         self.pageInfo =  pageInfo
     }

@@ -17,7 +17,7 @@ class FlutterBladeDelegate: NSObject,BladeDelegate {
     func pushFlutterPage(event: FlutterBaseEvent) {
         let vc = FlutterViewContainer()
         if let info = event.payload {
-            vc.setPageInfo(info)
+            vc.setPageInfo(info,result: event.result)
         }
         self.navigationController?.pushViewController(vc, animated: true)
     }

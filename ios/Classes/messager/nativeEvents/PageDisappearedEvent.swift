@@ -6,9 +6,10 @@
 //
 
 import Foundation
-public class PageDisappearedEvent:NativeBaseEvent {
+public struct PageDisappearedEvent:NativeBaseEvent {
+    var methodName: String
+    var pageInfo: PageInfo?
     init(_ pageInfo:PageInfo?) {
-        super.init()
         self.methodName = "pageDisappeared"
         self.pageInfo =  pageInfo
     }

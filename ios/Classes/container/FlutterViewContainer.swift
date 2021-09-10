@@ -9,13 +9,14 @@ import Foundation
 
 protocol FlutterContainerDelegate {
     var pageInfo:PageInfo? {get set}
-    func setPageInfo(_ pageInfo:PageInfo)
+    func setPageInfo(_ pageInfo:PageInfo,result:FlutterResult?)
 }
 
 public class FlutterViewContainer: FlutterViewController,FlutterContainerDelegate {
     var pageInfo:PageInfo?
     var flbNibName: String?
     var flbNibBundle: Bundle?
+    var result:FlutterResult?
     public init() {
         Blade.shared.engine.viewController = nil
         super.init(engine: Blade.shared.engine, nibName: flbNibName, bundle: flbNibBundle)
@@ -26,7 +27,8 @@ public class FlutterViewContainer: FlutterViewController,FlutterContainerDelegat
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func setPageInfo(_ pageInfo:PageInfo) {
+    public func setPageInfo(_ pageInfo:PageInfo,result:FlutterResult? = nil) {
+        self.result = result
         self.pageInfo = pageInfo
         if self.pageInfo?.id.count == 0 {
             self.pageInfo?.id = UUID.init().uuidString
@@ -35,7 +37,6 @@ public class FlutterViewContainer: FlutterViewController,FlutterContainerDelegat
     }
 
     public override func willMove(toParent parent: UIViewController?) {
-        
         Blade.shared.channel?.sendEvent(event: PagePushedEvent(pageInfo))
         super.willMove(toParent: parent)
     }
@@ -86,6 +87,8 @@ public class FlutterViewContainer: FlutterViewController,FlutterContainerDelegat
         self.navigationController?.navigationBar.isHidden = true
         attatchFlutterEngine()
         Blade.shared.channel?.sendEvent(event: PagePushedEvent(pageInfo))
+        result?(true)
+        result = nil
         super.viewWillAppear(animated)
     }
 

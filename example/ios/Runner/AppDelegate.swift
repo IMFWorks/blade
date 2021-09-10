@@ -10,8 +10,8 @@ import blade
   ) -> Bool {
     let vc = FirstViewController()
     window.rootViewController  = UINavigationController(rootViewController: vc)
-    let flutterdelegate = FlutterBladeDelegate()
     
+    let flutterdelegate = FlutterBladeDelegate()
     flutterdelegate.navigationController = vc.navigationController
     Blade.shared.setup(application: application, delegate: flutterdelegate)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
