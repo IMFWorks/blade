@@ -119,7 +119,7 @@ class _FlutterPageState extends State<FlutterPage>
                     )),
                 onTap: () async {
                   final result = await BladeNavigator.of()
-                      .pushFlutterPageOnNative("flutterPageA", arguments: {'status': 101});
+                      .pushFlutterPageOnNative("flutterPageA", arguments: {'status': 101,'from': 'flutterPageA'});
                   print('Get result: $result');
                 }),
 

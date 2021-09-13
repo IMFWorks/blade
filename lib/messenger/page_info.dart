@@ -7,7 +7,7 @@ part 'page_info.g.dart';
 class PageInfo implements JsonConvertible{
   PageInfo({required this.name,
         required this.id,
-        this.arguments}) ;
+     this.arguments}) ;
 
   String name;
   String id;

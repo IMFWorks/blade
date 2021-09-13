@@ -6,6 +6,7 @@ import 'package:blade/navigator/base_navigator.dart';
 import '../logger.dart';
 
 mixin PushMixin on BaseNavigator {
+
   void push(PageInfo pageInfo) {
     final id = pageInfo.id;
     final BladeContainer? container = containerManager.getContainerById(id);

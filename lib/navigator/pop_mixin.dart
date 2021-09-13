@@ -23,50 +23,18 @@ mixin PopMixin on BaseNavigator {
   void popUtil<T extends Object>(String name) async {
     final container = containerManager.getContainerByName(name);
     if(container != null) {
-      if (container == topContainer) {
-        if (container.pageInfo.name == name) {
-          _popContainer(container, null);
-        } else {
-          container.popUntil(name);
-        }
-      } else {
-        final pageInfo = PageInfo(name: name,
-            id: "",
-            arguments: null);
+      if (container != topContainer) {
+        // pop 依赖name去查找对应的Container，id默认给''
+        final pageInfo = PageInfo(name: name, id: "");
         final event = PopUntilNativePageEvent(pageInfo);
         eventDispatcher.sendNativeEvent(event);
       }
+
+      container.popUntil(name);
     } else {
       Logger.error("popUtil id not found");
     }
   }
-
-  //
-// Future<bool> popUntil(String uniqueId,
-//     {Map<dynamic, dynamic>? arguments}) async {
-//   final BladeContainer? container = _findContainerByUniqueId(uniqueId);
-//   if (container == null) {
-//     Logger.error('uniqueId=$uniqueId not find');
-//     return false;
-//   }
-//   final BladePage? page = _findPageByUniqueId(uniqueId, container);
-//   if (page == null) {
-//     Logger.error('uniqueId=$uniqueId page not find');
-//     return false;
-//   }
-//
-//   if (container != topContainer) {
-//     final CommonParams params = CommonParams()
-//       ..pageName = container.pageInfo.name
-//       ..uniqueId = container.pageInfo.id
-//       ..arguments = container.pageInfo.arguments;
-//     await _nativeRouterApi.popUtilRouter(params);
-//   }
-//   container.popUntil(page.pageInfo.name);
-//   Logger.log(
-//       'pop container, uniqueId=$uniqueId, arguments:$arguments, $container');
-//   return true;
-// }
 
   void _popContainer(BladeContainer container, Map<String, dynamic>? result) async {
     Logger.log('_popContainer ,  id=${container.pageInfo.id}');

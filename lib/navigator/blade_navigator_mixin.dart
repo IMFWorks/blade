@@ -34,7 +34,6 @@ mixin BladeNavigatorMixin on BaseNavigator, PopMixin implements BladeNavigator {
 
 //
 
-
 // void enablePanGesture(String uniqueId, bool enable) {
 //   final PanGestureParams params = PanGestureParams()
 //     ..uniqueId = uniqueId
