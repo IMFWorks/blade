@@ -10,7 +10,7 @@ abstract class BladeNavigator {
       BladeAppState? appState;
       appState = context.findAncestorStateOfType<BladeAppState>();
       if (appState != null) {
-        return appState.hybridNavigator;
+        return appState.navigator;
       } else {
         throw Exception('appState is null');
       }
@@ -30,6 +30,6 @@ abstract class BladeNavigator {
 
   void pop<T>({T? result});
 
-  void popUtil<T extends Object>(String name);
+  void popUtil(String name);
 }
 

@@ -20,7 +20,7 @@ mixin PopMixin on BaseNavigator {
     Logger.log('pop , $container');
   }
 
-  void popUtil<T extends Object>(String name) async {
+  void popUtil(String name) async {
     final container = containerManager.getContainerByName(name);
     if(container != null) {
       if (container != topContainer) {
