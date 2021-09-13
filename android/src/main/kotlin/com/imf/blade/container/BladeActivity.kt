@@ -134,7 +134,6 @@ open class BladeActivity : FlutterActivity(), FlutterViewContainer {
 
     override fun onBackPressed() {
         containerLifecycleListener.handlePopped()
-        super.onBackPressed()
     }
 
     override fun getRenderMode(): RenderMode {
