@@ -1,6 +1,5 @@
 import 'package:blade/container/blade_container.dart';
 import 'package:blade/container/blade_page.dart';
-import 'package:blade/container/overlay_entry.dart';
 import 'package:blade/messenger/nativeEvents/push_flutter_page_event.dart';
 import 'package:blade/messenger/nativeEvents/push_native_page_event.dart';
 import 'package:blade/messenger/page_info.dart';
@@ -16,15 +15,15 @@ mixin PushMixin on BaseNavigator {
     if (container != null) {
       if (topContainer != container) {
         containerManager.removeContainer(container);
-        container.entryRemoved();
+        rawStack.remove(container);
         containerManager.addContainer(container);
-        insertEntry(container);
+        rawStack.push(container);
       } else {
       }
     } else {
       final container = containerManager.createContainer(pageInfo);
       containerManager.addContainer(container);
-      insertEntry(container);
+      rawStack.push(container);
     }
 
     Logger.log('push page,'

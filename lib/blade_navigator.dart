@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'blade_app.dart';
-import 'container/overlay_entry.dart';
 
 abstract class BladeNavigator {
 
