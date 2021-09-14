@@ -26,12 +26,13 @@ class BladeNavigatorImpl extends BaseNavigator with BladeNavigator,
   }
 
   BladeNavigatorImpl(BladeRouteFactory routeFactory, String initialRoute,  this.rawStack) {
+    eventDispatcher = EventDispatcher();
     this.containerManager = ContainerManager(routeFactory);
     final name = initialRoute;
     final pageInfo = PageInfo(name: name, id: createPageId(name));
-    final initialContainer = containerManager.createContainer(pageInfo);
+    final initialContainer = containerManager.createContainer(pageInfo, eventDispatcher);
     containerManager.addContainer(initialContainer);
-    eventDispatcher = EventDispatcher();
+
     init();
   }
 }

@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:blade/messenger/FlutterEventResponse.dart';
-import 'package:blade/messenger/NativeEvents/native_event.dart';
+import 'package:blade/messenger/NativeEvents/base/native_event.dart';
+import 'package:blade/messenger/event_sender.dart';
 import 'package:blade/messenger/page_info.dart';
 import 'package:flutter/services.dart';
 
 typedef _EventHandler = dynamic Function(dynamic arguments);
 
-class EventDispatcher {
+class EventDispatcher with EventSender {
   final MethodChannel _channel = const MethodChannel('com.imf.blade');
   final Map<String, _EventHandler> _eventHandlers = Map<String, _EventHandler>();
 

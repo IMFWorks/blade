@@ -45,6 +45,7 @@ class BladeContainerWidgetState extends State<BladeContainerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // todo-wrs pages not work
     // final pages = widget.container.pages;
     final pages = List.of(widget.container.pages);
 
@@ -57,7 +58,7 @@ class BladeContainerWidgetState extends State<BladeContainerWidget> {
         return true;
       },
       observers: <NavigatorObserver>[
-        BladeNavigatorObserver(widget.container.pages)
+        BladeNavigatorObserver()
       ],
     );
   }
@@ -70,9 +71,7 @@ class BladeContainerWidgetState extends State<BladeContainerWidget> {
 }
 
 class BladeNavigatorObserver extends NavigatorObserver {
-  List<BladePage<dynamic>> _pages;
-
-  BladeNavigatorObserver(this._pages);
+  BladeNavigatorObserver();
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
@@ -85,7 +84,6 @@ class BladeNavigatorObserver extends NavigatorObserver {
     }
 
     super.didPush(route, previousRoute);
-    _disablePanGesture();
   }
 
   @override
@@ -96,26 +94,5 @@ class BladeNavigatorObserver extends NavigatorObserver {
       PageLifecycle.shared.dispatchAppearedEvent(previousRoute);
     }
     super.didPop(route, previousRoute);
-    _enablePanGesture();
-  }
-
-  bool canDisable = true;
-
-  void _disablePanGesture() {
-    if (Platform.isIOS) {
-      if (_pages.length > 1 && canDisable) {
-        // BladeNavigator.of().enablePanGesture(_uniqueId, false);
-        canDisable = false;
-      }
-    }
-  }
-
-  void _enablePanGesture() {
-    if (Platform.isIOS) {
-      if (_pages.length == 1) {
-        // BladeNavigator.of().enablePanGesture(_uniqueId, true);
-        canDisable = true;
-      }
-    }
   }
 }

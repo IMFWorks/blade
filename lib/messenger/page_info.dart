@@ -1,4 +1,4 @@
-import 'package:blade/messenger/NativeEvents/json_convertible.dart';
+import 'package:blade/messenger/NativeEvents/base/json_convertible.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'page_info.g.dart';

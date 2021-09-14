@@ -21,7 +21,7 @@ mixin PushMixin on BaseNavigator {
       } else {
       }
     } else {
-      final container = containerManager.createContainer(pageInfo);
+      final container = containerManager.createContainer(pageInfo, eventDispatcher);
       containerManager.addContainer(container);
       rawStack.push(container);
     }

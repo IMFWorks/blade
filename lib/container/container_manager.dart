@@ -1,4 +1,5 @@
 
+import 'package:blade/messenger/event_sender.dart';
 import 'package:blade/messenger/page_info.dart';
 
 import '../logger.dart';
@@ -13,8 +14,8 @@ class ContainerManager {
 
   ContainerManager(this.routeFactory);
 
-  BladeContainer createContainer(PageInfo pageInfo) {
-    return BladeContainer(routeFactory, pageInfo);
+  BladeContainer createContainer(PageInfo pageInfo, EventSender eventSender) {
+    return BladeContainer(routeFactory, pageInfo, eventSender);
   }
 
   BladeContainer? getContainerById(String id) {
