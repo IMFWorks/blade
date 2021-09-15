@@ -9,8 +9,8 @@ import Foundation
 public struct BackgroundEvent:NativeBaseEvent {
     var methodName: String
     var pageInfo: PageInfo?
-    init(_ pageInfo:PageInfo?) {
+    init() {
         self.methodName = "background"
-        self.pageInfo =  pageInfo
+        self.pageInfo =  PageInfo()
     }
 }

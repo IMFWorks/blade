@@ -42,17 +42,20 @@ public class Blade {
     func pushFlutterPage(event: FlutterBaseEvent){
         plugin?.pushFlutterPage(event: event)
     }
+    
     func pushNativePage(event: FlutterBaseEvent){
         plugin?.pushNativePage(event: event)
     }
+    
     func registerNotification(){
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: OperationQueue.main) {_ in
-//            Blade.shared.channel?.sendEvent(event: ForegroundEvent(PageInfo()))
+            Blade.shared.channel?.sendEvent(event: ForegroundEvent())
         }
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: OperationQueue.main) {_ in
-//            Blade.shared.channel?.sendEvent(event: BackgroundEvent(PageInfo()))
+            Blade.shared.channel?.sendEvent(event: BackgroundEvent())
         }
     }
+    
     func unsetBlade(){
         NotificationCenter.default.removeObserver(self)
     }

@@ -19,7 +19,10 @@ class PlatformCoordinator {
         handlers["popNativePage"] = {(call:FlutterMethodCall,result) in
             guard let arguments = call.arguments as? String else{return}
             Blade.shared.containerManager?.handlePopNativePageEvent(FlutterBaseEvent(json: arguments , result: result))
-            result(true)
+        }
+        handlers["popUntilNativePage"] = {(call:FlutterMethodCall,result) in
+            guard let arguments = call.arguments as? String else{return}
+            Blade.shared.containerManager?.popUntilNativePage(FlutterBaseEvent(json: arguments , result: result))
         }
         handlers["pushNativePage"] = {(call:FlutterMethodCall,result) in
             guard let arguments = call.arguments as? String else{return}

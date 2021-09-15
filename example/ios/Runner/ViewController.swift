@@ -17,7 +17,7 @@ class FirstViewController: UIViewController {
     }
     @objc func click() {
         let vc = FlutterViewContainer()
-        vc.setPageInfo(PageInfo(name: "flutterPage", id: "1234", params: ["1":2]))
+        vc.setPageInfo(PageInfo(name: "flutterPage", id: "1234", params: ["pageName":"flutterPage"]))
         self.navigationController?.pushViewController(vc, animated: true)
     }
 }

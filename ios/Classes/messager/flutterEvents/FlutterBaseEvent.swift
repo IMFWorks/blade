@@ -12,13 +12,16 @@ public struct FlutterBaseEvent {
     init(json:String,result:@escaping FlutterResult) {
         self.result = result
         do{
-            guard let dic = try JSONSerialization.jsonObject(with: json.data(using: .utf8) ?? Data(), options: .mutableContainers) as? [String : Any] else {
+            guard let jsonData = json.data(using: .utf8),
+                  let dic = try JSONSerialization.jsonObject(with: jsonData, options: .mutableContainers) as? [String : Any] else {
                 return
             }
-            guard let id = dic["id"] as? String, let name = dic["name"] as? String,let arguments = dic["arguments"] as? [String: Any] else {
+            guard let id = dic["id"] as? String,
+                  let name = dic["name"] as? String else {
                 return
             }
-            self.payload = PageInfo(name: name, id: id, params: arguments)
+            let arguments = dic["arguments"] as? [String: Any]
+            self.payload = PageInfo(name: name, id: id, params: arguments ?? ["msg":"not arguments"])
         }catch{
             print(error)
         }
